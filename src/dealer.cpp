@@ -512,6 +512,7 @@ DealerScene::DealerScene(const DealerInfo *di)
     , m_demoInProgress(false)
     , m_dropInProgress(false)
     , m_hintQueued(false)
+    , m_hintWaitingForSolver(false)
     , m_demoQueued(false)
     , m_dropQueued(false)
     , m_newCardsQueued(false)
@@ -616,16 +617,26 @@ void DealerScene::startHint()
     if (isKeyboardModeActive())
         setKeyboardModeActive(false);
 
-    QList<QGraphicsItem *> toHighlight;
-    const auto moveHints = getHints();
-    for (const MoveHint &h : moveHints)
-        toHighlight << h.card();
+    // When the solver has found a way to win, only show its next move.
+    QList<QGraphicsItem *> toHighlight = winningMoveHintItems();
 
-    if (!m_winningMoves.isEmpty()) {
-        MOVE m = m_winningMoves.first();
-        MoveHint mh = solver()->translateMove(m);
-        if (mh.isValid())
-            toHighlight << mh.card();
+    if (toHighlight.isEmpty() && isSolverCalculating()) {
+        // The solver is still looking for a winning path (it restarts after
+        // every move): wait for its result, see slotSolverFinished().
+        m_hintWaitingForSolver = true;
+        m_hintInProgress = true;
+        clearHighlightedItems();
+        Q_EMIT hintActive(true);
+        return;
+    }
+    m_hintWaitingForSolver = false;
+
+    if (toHighlight.isEmpty()) {
+        // No known winning path (unwinnable, undetermined or solver
+        // disabled): show every sensible move.
+        const auto moveHints = getHints();
+        for (const MoveHint &h : moveHints)
+            toHighlight << h.card();
     }
 
     m_hintInProgress = !toHighlight.isEmpty();
@@ -633,8 +644,54 @@ void DealerScene::startHint()
     Q_EMIT hintActive(m_hintInProgress);
 }
 
+QList<QGraphicsItem *> DealerScene::winningMoveHintItems() const
+{
+    QList<QGraphicsItem *> items;
+    if (!m_solver)
+        return items;
+
+    for (const MOVE &m : m_winningMoves) {
+        const MoveHint mh = m_solver->translateMove(m);
+        if (mh.isValid()) {
+            items << mh.card();
+            // Destination: its top card, since a highlighted pile is hidden
+            // under its cards.
+            if (PatPile *dest = mh.pile()) {
+                if (dest->isEmpty())
+                    items << dest;
+                else
+                    items << dest->topCard();
+            }
+            return items;
+        }
+
+        // Moves to the foundations that the game makes by itself (e.g. the
+        // complete runs of Spider) cannot be shown: look at the next one.
+        if (m.totype == O_Type)
+            continue;
+
+        // A move from outside the tableau: dealing or drawing new cards.
+        // Highlight the stock.
+        const auto piles = patPiles();
+        for (PatPile *p : piles) {
+            if (p->pileRole() == PatPile::Stock && !p->isEmpty() && p->isVisible())
+                items << p->topCard();
+        }
+        return items;
+    }
+    return items;
+}
+
+bool DealerScene::isSolverCalculating() const
+{
+    if (!m_solver || !m_solverEnabled)
+        return false;
+    return m_solverUpdateTimer.isActive() || (m_solverThread && m_solverThread->isRunning());
+}
+
 void DealerScene::stopHint()
 {
+    m_hintWaitingForSolver = false;
     if (m_hintInProgress) {
         m_hintInProgress = false;
         clearHighlightedItems();
@@ -660,15 +717,23 @@ QList<MoveHint> DealerScene::getSolverHints()
     const auto moves = solver()->firstMoves();
     for (const MOVE &m : moves) {
         MoveHint mh = solver()->translateMove(m);
-        hintList << mh;
+        if (mh.isValid())
+            hintList << mh;
     }
     return hintList;
 }
 
 QList<MoveHint> DealerScene::getHints()
 {
-    if (solver())
-        return getSolverHints();
+    if (solver()) {
+        const QList<MoveHint> solverHints = getSolverHints();
+        if (!solverHints.isEmpty())
+            return solverHints;
+        // Some solvers do not provide first moves at all (e.g. the Spider
+        // solver, which explicitly relies on the brute force hints): fall
+        // back to them, otherwise no hint would be shown unless the
+        // background solver had already found a complete winning path.
+    }
 
     return bruteForceHints();
 }
@@ -1392,8 +1457,14 @@ void DealerScene::slotSolverFinished(int result)
         m_currentState->winningMoves = m_winningMoves;
     }
 
-    if (result == SolverInterface::SearchAborted)
+    if (result == SolverInterface::SearchAborted) {
         startSolver();
+        return;
+    }
+
+    // A hint was requested while the solver was working: show it now.
+    if (m_hintWaitingForSolver && !isSolverCalculating())
+        startHint();
 }
 
 int DealerScene::gameNumber() const

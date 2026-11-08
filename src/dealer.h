@@ -224,6 +224,10 @@ private:
     void multiStepSubMove(QList<KCard *> cards, KCardPile *pile, QList<KCardPile *> freePiles, const QList<KCardPile *> &freeCells);
     void continueMultiStepMove();
     QList<MoveHint> bruteForceHints();
+    // Items to highlight for the next move of the known winning path (empty
+    // if no winning path is known or none of its moves can be shown).
+    QList<QGraphicsItem *> winningMoveHintItems() const;
+    bool isSolverCalculating() const;
 
     const DealerInfo *const m_di;
 
@@ -268,6 +272,9 @@ private:
     bool m_dropInProgress;
 
     bool m_hintQueued;
+    // A hint was requested while the solver was still looking for a
+    // winning path: show it as soon as the solver has finished.
+    bool m_hintWaitingForSolver;
     bool m_demoQueued;
     bool m_dropQueued;
     bool m_newCardsQueued;

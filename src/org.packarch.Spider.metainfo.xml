@@ -29,6 +29,12 @@
   </categories>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.0.1" date="2026-11-08">
+      <description>
+        <p>Hints: when the solver knows how to win, the hint shows the next winning move (card and destination, or the stock when a new row must be dealt). Otherwise every possible move is shown; before, Spider often gave no hint at all.</p>
+        <p xml:lang="fr">Conseils : quand l'outil de résolution sait comment gagner, le conseil montre le prochain coup gagnant (la carte et sa destination, ou la pioche s'il faut distribuer une rangée). Sinon, tous les coups possibles sont montrés ; avant, le Spider ne donnait souvent aucun conseil.</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-11-08">
       <description>
         <p>First release: KPatience ported to Qt only and renamed for Packarch.</p>

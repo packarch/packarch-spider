@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
-project(packarch-spider VERSION 1.0.0 LANGUAGES C CXX)
+project(packarch-spider VERSION 1.0.1 LANGUAGES C CXX)
 
 # Packarch Spider: patience card games for Packarch, based on KDE's
 # KPatience, built with Qt only (no KDE Frameworks / libkdegames / ECM).
