@@ -1,0 +1,1318 @@
+# Translation of kpat.po into Serbian.
+# Milos Puzovic <m.puzovic@etoncollege.org.uk>, 2001.
+# Bojan Bozovic <bole89@infosky.net>, 2003.
+# Chusslove Illich <caslav.ilic@gmx.net>, 2003, 2004, 2005, 2009, 2010, 2011, 2012, 2013, 2014, 2016.
+# Slobodan Simic <slsimic@gmail.com>, 2009, 2010.
+# Dalibor Djuric <daliborddjuric@gmail.com>, 2010, 2011.
+# Nemanja Hiršl <nemhirsl@gmail.com>, 2026.
+msgid ""
+msgstr ""
+"Project-Id-Version: kpat\n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2026-10-15 00:42+0000\n"
+"PO-Revision-Date: 2026-10-07 11:45+0200\n"
+"Last-Translator: Nemanja Hiršl <nemhirsl@gmail.com>\n"
+"Language-Team: Serbian <kde-i18n-sr@kde.org>\n"
+"Language: sr@ijekavian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Accelerator-Marker: &\n"
+"X-Text-Markup: kde4\n"
+"X-Environment: kde\n"
+"X-Generator: Lokalize 1.0\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Милош Пузовић,Часлав Илић,Слободан Симић,Немања Хиршл"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr ""
+"m.puzovic@etoncollege.org.uk,caslav.ilic@gmx.net,slsimic@gmail.com,"
+"nemhirsl@gmail.com"
+
+#: bakersdozen.cpp:69 castle.cpp:361 freecell.cpp:347
+#, kde-format
+msgctxt "@title:menu"
+msgid "Popular Variant Presets"
+msgstr "Популарне варијанте"
+
+#: bakersdozen.cpp:70
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Baker's Dozen"
+msgstr "пекарско туце"
+
+#: bakersdozen.cpp:71
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Spanish Patience"
+msgstr "шпански пасијанс"
+
+#: bakersdozen.cpp:72
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Castles in Spain"
+msgstr "замкови у Шпанији"
+
+#: bakersdozen.cpp:73
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Portuguese Solitaire"
+msgstr "португалски пасијанс"
+
+#: bakersdozen.cpp:74 castle.cpp:368 freecell.cpp:353
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Custom"
+msgstr "посебна"
+
+#: bakersdozen.cpp:76 castle.cpp:370 freecell.cpp:355
+#, kde-format
+msgctxt "@title:menu"
+msgid "Empty Stack Fill"
+msgstr "Попуњавање празне колоне"
+
+#: bakersdozen.cpp:77 castle.cpp:371 freecell.cpp:356
+#, kde-format
+msgctxt "@item:inmenu empty stack fill"
+msgid "Any (Easy)"
+msgstr "било која (лако)"
+
+#: bakersdozen.cpp:78 castle.cpp:372 freecell.cpp:357
+#, kde-format
+msgctxt "@item:inmenu empty stack fill"
+msgid "Kings only (Medium)"
+msgstr "само краљеви (средње)"
+
+#: bakersdozen.cpp:79 castle.cpp:373 freecell.cpp:358
+#, kde-format
+msgctxt "@item:inmenu empty stack fill"
+msgid "None (Hard)"
+msgstr "ниједна (тешко)"
+
+#: bakersdozen.cpp:81 castle.cpp:394 spider.cpp:147
+#, kde-format
+msgctxt "@title:menu"
+msgid "Stack Options"
+msgstr "Опције колона"
+
+#: bakersdozen.cpp:82 spider.cpp:149
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Up (Easier)"
+msgstr "лицем нагоре (лакше)"
+
+#: bakersdozen.cpp:83 spider.cpp:148
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Down (Harder)"
+msgstr "лицем надоље (теже)"
+
+#: bakersdozen.cpp:85 castle.cpp:375 freecell.cpp:360
+#, kde-format
+msgctxt "@title:menu"
+msgid "Build Sequence"
+msgstr "Слагање низа"
+
+#: bakersdozen.cpp:86 castle.cpp:376 freecell.cpp:361
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Alternating Color"
+msgstr "наизмјенично црвена и црна"
+
+#: bakersdozen.cpp:87 castle.cpp:377 freecell.cpp:362
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Matching Suit"
+msgstr "иста боја"
+
+#: bakersdozen.cpp:88 castle.cpp:378 freecell.cpp:363
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Rank"
+msgstr "вриједност"
+
+#: bakersdozen.cpp:238 bakersdozen.cpp:241
+msgid "Baker's Dozen"
+msgstr "пекарско туце|/|$[својства аку 'пекарско туце']"
+
+#: bakersdozen.cpp:242
+msgid "Spanish Patience"
+msgstr "шпански пасијанс"
+
+#: bakersdozen.cpp:243
+msgid "Castles in Spain"
+msgstr "замкови у Шпанији"
+
+#: bakersdozen.cpp:244
+msgid "Portuguese Solitaire"
+msgstr "португалски пасијанс"
+
+#: bakersdozen.cpp:245
+msgid "Baker's Dozen (Custom)"
+msgstr "пекарско туце (посебно)"
+
+#: bizilizi.cpp:204
+#, kde-format
+msgctxt "@title:menu"
+msgid "Bizilizi &Options"
+msgstr "&Опције игре бизилизи"
+
+#: bizilizi.cpp:205
+#, kde-format
+msgctxt "@item:inmenu bizilizi option"
+msgid "23 Covered Cards"
+msgstr "23 покривене карте"
+
+#: bizilizi.cpp:206
+#, kde-format
+msgctxt "@item:inmenu bizilizi option"
+msgid "24 Covered Cards"
+msgstr "24 покривене карте"
+
+#: bizilizi.cpp:210
+#, kde-format
+msgctxt "@title:menu"
+msgid "Pool Analysis"
+msgstr "Анализа резерве"
+
+#: bizilizi.cpp:211
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Off"
+msgstr "искључено"
+
+#: bizilizi.cpp:212
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Instant"
+msgstr "одмах"
+
+#: bizilizi.cpp:213
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 4"
+msgstr "послије 4 секунде"
+
+#: bizilizi.cpp:214
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 10"
+msgstr "послије 10 секунди"
+
+#: bizilizi.cpp:215
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 18"
+msgstr "послије 18 секунди"
+
+#: bizilizi.cpp:219
+#, kde-format
+msgctxt "@title:menu"
+msgid "Delayed Hints"
+msgstr "Одложени савјети"
+
+#: bizilizi.cpp:220
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "Off"
+msgstr "искључено"
+
+#: bizilizi.cpp:221
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "6 Seconds"
+msgstr "6 секунди"
+
+#: bizilizi.cpp:222
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "14 Seconds"
+msgstr "14 секунди"
+
+#: bizilizi.cpp:223
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "22 Seconds"
+msgstr "22 секунде"
+
+#: bizilizi.cpp:917
+msgid "Bizilizi"
+msgstr "бизилизи|/|$[својства аку 'бизилизи']"
+
+#: bizilizi.cpp:920
+msgid "Bizilizi (23 Covered)"
+msgstr "бизилизи (23 покривене)"
+
+#: bizilizi.cpp:921
+msgid "Bizilizi (24 Covered)"
+msgstr "бизилизи (24 покривене)"
+
+#: castle.cpp:319
+msgid "Castle"
+msgstr "замак|/|$[својства аку 'замак']"
+
+#: castle.cpp:322
+msgid "Beleaguered Castle"
+msgstr "опсједнути замак"
+
+#: castle.cpp:323
+msgid "Citadel"
+msgstr "цитадела"
+
+#: castle.cpp:324
+msgid "Exiled Kings"
+msgstr "прогнани краљеви"
+
+#: castle.cpp:325
+msgid "Streets and Alleys"
+msgstr "улице и сокаци"
+
+#: castle.cpp:326
+msgid "Siegecraft"
+msgstr "опсадно умијеће"
+
+#: castle.cpp:327
+msgid "Stronghold"
+msgstr "тврђава"
+
+#: castle.cpp:328
+msgid "Castle (Custom)"
+msgstr "замак (посебан)"
+
+#: castle.cpp:362
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Beleaguered Castle"
+msgstr "опсједнути замак"
+
+#: castle.cpp:363
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Citadel"
+msgstr "цитадела"
+
+#: castle.cpp:364
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Exiled Kings"
+msgstr "прогнани краљеви"
+
+#: castle.cpp:365
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Streets and Alleys"
+msgstr "улице и сокаци"
+
+#: castle.cpp:366
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Siegecraft"
+msgstr "опсадно умијеће"
+
+#: castle.cpp:367
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Stronghold"
+msgstr "тврђава"
+
+#: castle.cpp:380 freecell.cpp:365
+#, kde-format
+msgctxt "@title:menu"
+msgid "Free Cells"
+msgstr "Слободне ћелије"
+
+#: castle.cpp:381 freecell.cpp:366
+#, kde-format
+msgid "0"
+msgstr "0"
+
+#: castle.cpp:382 freecell.cpp:367 freecell.cpp:386
+#, kde-format
+msgid "1"
+msgstr "1"
+
+#: castle.cpp:383 freecell.cpp:368 freecell.cpp:387
+#, kde-format
+msgid "2"
+msgstr "2"
+
+#: castle.cpp:384 freecell.cpp:369 freecell.cpp:388
+#, kde-format
+msgid "3"
+msgstr "3"
+
+#: castle.cpp:385 freecell.cpp:370
+#, kde-format
+msgid "4"
+msgstr "4"
+
+#: castle.cpp:387 freecell.cpp:376
+#, kde-format
+msgctxt "@title:menu"
+msgid "Stacks"
+msgstr "Колоне"
+
+#: castle.cpp:388 freecell.cpp:372 freecell.cpp:377
+#, kde-format
+msgid "6"
+msgstr "6"
+
+#: castle.cpp:389 freecell.cpp:373 freecell.cpp:378
+#, kde-format
+msgid "7"
+msgstr "7"
+
+#: castle.cpp:390 freecell.cpp:374 freecell.cpp:379
+#, kde-format
+msgid "8"
+msgstr "8"
+
+#: castle.cpp:391 freecell.cpp:380
+#, kde-format
+msgid "9"
+msgstr "9"
+
+#: castle.cpp:392 freecell.cpp:381
+#, kde-format
+msgid "10"
+msgstr "10"
+
+#: castle.cpp:395
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Down"
+msgstr "лицем надоље"
+
+#: castle.cpp:396
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Up"
+msgstr "лицем нагоре"
+
+#: castle.cpp:397
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Alternating Face Up"
+msgstr "наизмјенично лицем нагоре"
+
+#: castle.cpp:399
+#, kde-format
+msgctxt "@title:menu"
+msgid "Foundation Deal"
+msgstr "Дијељење на темеље"
+
+#: castle.cpp:400
+#, kde-format
+msgctxt "@item:inmenu foundation deal"
+msgid "None"
+msgstr "ниједна"
+
+# >> @item game type
+#: castle.cpp:401
+#, kde-format
+msgctxt "@item:inmenu foundation deal"
+msgid "Aces"
+msgstr "асови"
+
+#: castle.cpp:402
+#, kde-format
+msgctxt "@item:inmenu foundation deal"
+msgid "Any"
+msgstr "било која"
+
+#: castle.cpp:404
+#, kde-format
+msgctxt "@title:menu"
+msgid "Layout"
+msgstr "Распоред"
+
+#: castle.cpp:405
+#, kde-format
+msgctxt "@item:inmenu layout"
+msgid "Classic"
+msgstr "класичан"
+
+#: castle.cpp:406
+#, kde-format
+msgctxt "@item:inmenu layout"
+msgid "Modern"
+msgstr "модеран"
+
+# >> @item game type
+#: clock.cpp:157
+msgid "Grandfather's Clock"
+msgstr "дједин часовник|/|$[својства аку 'дједин часовник']"
+
+#: dealer.cpp:72
+#, kde-format
+msgid "Solver: This game is winnable."
+msgstr "Рјешавач: партија се може добити."
+
+#: dealer.cpp:74
+#, kde-format
+msgid "Solver: This game is no longer winnable."
+msgstr "Рјешавач: партија се више не може добити."
+
+#: dealer.cpp:74
+#, kde-format
+msgid "Solver: This game cannot be won."
+msgstr "Рјешавач: партија се не може добити."
+
+#: dealer.cpp:76
+#, kde-format
+msgid "Solver: Unable to determine if this game is winnable."
+msgstr "Рјешавач: не могу да одредим да ли се партија може добити."
+
+#: dealer.cpp:943
+#, kde-format
+msgid "Congratulations! We have won."
+msgstr "Честитке! Побиједили смо."
+
+#: dealer.cpp:945
+#, kde-format
+msgid "Congratulations! You have won."
+msgstr "Честитке! Побиједили сте."
+
+#: dealer.cpp:1233
+#, kde-format
+msgid "Solver: This game is lost."
+msgstr "Рјешавач: партија је изгубљена."
+
+#: dealer.cpp:1374
+#, kde-format
+msgid "Solver: Calculating…"
+msgstr "Рјешавач: рачунам…"
+
+#: dealer.cpp:1781
+#, kde-format
+msgid ""
+"A new game has been requested, but there is already a game in progress.\n"
+"\n"
+"A loss will be recorded in the statistics if the current game is abandoned."
+msgstr ""
+"Затражена је нова партија, али је једна већ у току.\n"
+"\n"
+"Ако се тренутна партија напусти, биће забиљежена у статистику као изгубљена."
+
+#: dealer.cpp:1783
+#, kde-format
+msgctxt "@title:window"
+msgid "Abandon Current Game?"
+msgstr "Напустити текућу партију?"
+
+#: dealer.cpp:1784
+#, kde-format
+msgctxt "@action:button"
+msgid "Abandon Current Game"
+msgstr "Напусти партију"
+
+# >> @item game type
+#: fortyeight.cpp:229
+msgid "Forty & Eight"
+msgstr "четрдесет и осам|/|$[својства аку 'четрдесет и осам']"
+
+#: freecell.cpp:308 freecell.cpp:314
+msgid "Freecell"
+msgstr "фрисел"
+
+#: freecell.cpp:311
+msgid "Baker's Game"
+msgstr "пекарска игра"
+
+#: freecell.cpp:312
+msgid "Eight Off"
+msgstr "осам по страни"
+
+#: freecell.cpp:313
+msgid "Forecell"
+msgstr "форсел"
+
+#: freecell.cpp:315
+msgid "Seahaven Towers"
+msgstr "куле Сихејвена"
+
+#: freecell.cpp:316
+msgid "Freecell (Custom)"
+msgstr "фрисел (посебан)"
+
+#: freecell.cpp:348
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Baker's Game"
+msgstr "пекарска игра"
+
+#: freecell.cpp:349
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Eight Off"
+msgstr "осам по страни"
+
+#: freecell.cpp:350
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Forecell"
+msgstr "форсел"
+
+#: freecell.cpp:351
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Freecell"
+msgstr "фрисел"
+
+#: freecell.cpp:352
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Seahaven Towers"
+msgstr "куле Сихејвена"
+
+#: freecell.cpp:371
+#, kde-format
+msgid "5"
+msgstr "5"
+
+#: freecell.cpp:382
+#, kde-format
+msgid "11"
+msgstr "11"
+
+#: freecell.cpp:383
+#, kde-format
+msgid "12"
+msgstr "12"
+
+#: freecell.cpp:385
+#, kde-format
+msgctxt "@title:menu"
+msgid "Decks"
+msgstr "Шпилови"
+
+# >> @item game type
+#: golf.cpp:189
+msgid "Golf"
+msgstr "голф|/|$[својства аку 'голф']"
+
+# >> @item game type
+#: grandf.cpp:188
+msgid "Grandfather"
+msgstr "дједа|/|$[својства аку 'дједу']"
+
+# >> @item game type
+#: idiot.cpp:225
+msgid "Aces Up"
+msgstr "асови горе|/|$[својства аку 'асове горе']"
+
+#: klondike.cpp:135
+#, kde-format
+msgctxt "@title:menu"
+msgid "Klondike &Options"
+msgstr "&Опције клондајка"
+
+#: klondike.cpp:136
+#, kde-format
+msgctxt "@item:inmenu klondike option"
+msgid "Draw 1"
+msgstr "Извлачење једне"
+
+#: klondike.cpp:137
+#, kde-format
+msgctxt "@item:inmenu klondike option"
+msgid "Draw 3"
+msgstr "Извлачење три"
+
+# >> @item game type
+#: klondike.cpp:313
+msgid "Klondike"
+msgstr "клондајк"
+
+# >> @item game type
+# well-spelled: изв
+#: klondike.cpp:316
+msgid "Klondike (Draw 1)"
+msgstr "клондајк (изв. 1)"
+
+# >> @item game type
+# well-spelled: изв
+#: klondike.cpp:317
+msgid "Klondike (Draw 3)"
+msgstr "клондајк (изв. 3)"
+
+#. i18n: ectx: Menu (move)
+#: kpatui.rc:23
+#, kde-format
+msgid "Move"
+msgstr "Потез"
+
+#. i18n: ectx: ToolBar (mainToolBar)
+#: kpatui.rc:42
+#, kde-format
+msgid "Main Toolbar"
+msgstr "Главна трака"
+
+#: libkcardgame/kcardthemewidget.cpp:266
+#, kde-format
+msgctxt "@info"
+msgid "Loading…"
+msgstr "Учитавам…"
+
+#: libkcardgame/kcardthemewidget.cpp:352
+#, kde-format
+msgctxt "@action:button"
+msgid "Download New Card Decks…"
+msgstr "Преузми нове шпилове карата…"
+
+#: main.cpp:89
+#, kde-format
+msgid "KPatience"
+msgstr "К‑пасијанс"
+
+# rewrite-msgid: /Game//
+#: main.cpp:91
+#, kde-format
+msgid "KDE Patience Game"
+msgstr "Пасијанс за КДЕ"
+
+#: main.cpp:93
+#, kde-format
+msgid ""
+"© 1995 Paul Olav Tvete\n"
+"© 2000 Stephan Kulow"
+msgstr ""
+"© 1995, Паул Олав Твете\n"
+"© 2000, Штефан Кулов"
+
+#: main.cpp:97
+#, kde-format
+msgid "Paul Olav Tvete"
+msgstr "Паул Олав Твете"
+
+#: main.cpp:97
+#, kde-format
+msgid "Author of original Qt version"
+msgstr "Аутор оригиналне КуТ верзије"
+
+#: main.cpp:98
+#, kde-format
+msgid "Mario Weilguni"
+msgstr "Марио Вајлгуни"
+
+#: main.cpp:98
+#, kde-format
+msgid "Initial KDE port"
+msgstr "Почетни пренос на КДЕ"
+
+#: main.cpp:99
+#, kde-format
+msgid "Matthias Ettrich"
+msgstr "Матијас Етрих"
+
+#: main.cpp:100
+#, kde-format
+msgid "Rodolfo Borges"
+msgstr "Родолфо Боржес"
+
+#: main.cpp:100 main.cpp:113
+#, kde-format
+msgid "New game types"
+msgstr "Нове врсте игара"
+
+#: main.cpp:101
+#, kde-format
+msgid "Peter H. Ruegg"
+msgstr "Петер Х. Риг"
+
+#: main.cpp:102
+#, kde-format
+msgid "Michael Koch"
+msgstr "Михаел Кох"
+
+#: main.cpp:102 main.cpp:109
+#, kde-format
+msgid "Bug fixes"
+msgstr "Исправке грешака"
+
+#: main.cpp:103
+#, kde-format
+msgid "Marcus Meissner"
+msgstr "Маркус Мајснер"
+
+#: main.cpp:103
+#, kde-format
+msgid "Shuffle algorithm for game numbers"
+msgstr "Алгоритам мијешања за бројеве игре"
+
+#: main.cpp:104
+#, kde-format
+msgid "Tom Holroyd"
+msgstr "Том Холројд"
+
+#: main.cpp:104
+#, kde-format
+msgid "Initial patience solver"
+msgstr "Почетни рјешавач пасијанса"
+
+#: main.cpp:105
+#, kde-format
+msgid "Stephan Kulow"
+msgstr "Штефан Кулов"
+
+#: main.cpp:105
+#, kde-format
+msgid "Rewrite and current maintainer"
+msgstr "Писање изнова и тренутни одржавалац"
+
+#: main.cpp:106
+#, kde-format
+msgid "Erik Sigra"
+msgstr "Ерик Сигра"
+
+#: main.cpp:106
+#, kde-format
+msgid "Klondike improvements"
+msgstr "Побољшања клондајка"
+
+#: main.cpp:107
+#, kde-format
+msgid "Josh Metzler"
+msgstr "Џош Мецлер"
+
+#: main.cpp:107
+#, kde-format
+msgid "Spider implementation"
+msgstr "Изведба паука"
+
+#: main.cpp:108
+#, kde-format
+msgid "Maren Pakura"
+msgstr "Марен Пакура"
+
+#: main.cpp:108
+#, kde-format
+msgid "Documentation"
+msgstr "Документација"
+
+#: main.cpp:109
+#, kde-format
+msgid "Inge Wallin"
+msgstr "Инге Валин"
+
+#: main.cpp:110
+#, kde-format
+msgid "Simon Hürlimann"
+msgstr "Симон Хирлиман"
+
+#: main.cpp:110
+#, kde-format
+msgid "Menu and toolbar work"
+msgstr "Рад око менија и траке алатки"
+
+#: main.cpp:111
+#, kde-format
+msgid "Parker Coates"
+msgstr "Паркер Коутс"
+
+#: main.cpp:111
+#, kde-format
+msgid "Cleanup and polish"
+msgstr "Чишћење и полирање"
+
+#: main.cpp:112
+#, kde-format
+msgid "Shlomi Fish"
+msgstr "Shlomi Fish"
+
+#: main.cpp:112
+#, kde-format
+msgid "Integration with Freecell Solver and further work"
+msgstr "Уклапање рјешавача Freecell Solver и даљи рад"
+
+#: main.cpp:113
+#, kde-format
+msgid "Michael Lang"
+msgstr "Michael Lang"
+
+#: main.cpp:120
+#, kde-format
+msgid "Try to find a solution to the given savegame"
+msgstr "Покушај да нађеш рјешење за дату позицију"
+
+#: main.cpp:121
+#, kde-format
+msgid "Dealer to solve (debug)"
+msgstr "Дијелилац рјешава (исправљање)"
+
+#: main.cpp:122
+#, kde-format
+msgid "Game range start (default 0:INT_MAX)"
+msgstr "Опсег игре почиње (подразумијевано 0:максимум)"
+
+#: main.cpp:124
+#, kde-format
+msgid "Game range end (default start:start if start given)"
+msgstr ""
+"Опсег игре завршава (подразумијевано почетак:почетак ако је дат почетак)"
+
+#: main.cpp:127
+#, kde-format
+msgid ""
+"Skip the selection screen and load a particular game type. Valid values are: "
+"%1"
+msgstr ""
+"Прескочи изборни екран и учитај дату врсту игре. Прихватљиве вриједности: %1"
+
+#: main.cpp:129
+#, kde-format
+msgid "Directory with test cases"
+msgstr "Фасцикла са пробним случајевима"
+
+#: main.cpp:130
+#, kde-format
+msgid "Generate random test cases"
+msgstr "Генериши насумичне пробне случајеве"
+
+#: main.cpp:131
+#, kde-format
+msgid "File to load"
+msgstr "Фајл за учитавање"
+
+#: main.cpp:327
+#, kde-format
+msgctxt "List separator"
+msgid ", "
+msgstr ", "
+
+#: mainwindow.cpp:152
+#, kde-format
+msgctxt "@action Start a new game of a different type"
+msgid "New &Game…"
+msgstr "Нова &игра…"
+
+#: mainwindow.cpp:158
+#, kde-format
+msgctxt "@action Start a new game of without changing the game type"
+msgid "New &Deal"
+msgstr "Ново &дијељење"
+
+#: mainwindow.cpp:164
+#, kde-format
+msgctxt "@action Start a game by giving its particular number"
+msgid "New &Numbered Deal…"
+msgstr "Ново &нумерисано дијељење…"
+
+#: mainwindow.cpp:169
+#, kde-format
+msgctxt "@action Replay the current deal from the start"
+msgid "Restart Deal"
+msgstr "Дијели из почетка"
+
+#: mainwindow.cpp:175
+#, kde-format
+msgctxt ""
+"@action Start the game with the number one greater than the current one"
+msgid "Next Deal"
+msgstr "Сљедеће дијељење"
+
+#: mainwindow.cpp:184
+#, kde-format
+msgctxt "@action Start the game with the number one less than the current one"
+msgid "Previous Deal"
+msgstr "Претходно дијељење"
+
+#: mainwindow.cpp:198
+#, kde-format
+msgctxt "@action"
+msgid "Statistics"
+msgstr "Статистика"
+
+#: mainwindow.cpp:227
+#, kde-format
+msgctxt ""
+"@action Take one or more cards from the deck, flip them, and place them in "
+"play"
+msgid "Dra&w"
+msgstr "&Вуци"
+
+#: mainwindow.cpp:232
+#, kde-format
+msgctxt "@action Deal a new row of cards from the deck"
+msgid "Dea&l Row"
+msgstr "Дијели &врсту"
+
+#: mainwindow.cpp:237
+#, kde-format
+msgctxt "@action Collect the cards in play, shuffle them and redeal them"
+msgid "&Redeal"
+msgstr "Дијели по&ново"
+
+#: mainwindow.cpp:242
+#, kde-format
+msgctxt "@action Automatically move cards to the foundation piles"
+msgid "Dro&p"
+msgstr "&Спусти"
+
+#: mainwindow.cpp:249
+#, kde-format
+msgctxt "@option:check"
+msgid "&Enable Autodrop"
+msgstr "&Аутоматско спуштање"
+
+#: mainwindow.cpp:254
+#, kde-format
+msgctxt "@option:check"
+msgid "E&nable Solver"
+msgstr "&Рјешавач"
+
+#: mainwindow.cpp:259
+#, kde-format
+msgctxt "@option:check"
+msgid "Play Sounds"
+msgstr "Пуштај звукове"
+
+#: mainwindow.cpp:264
+#, kde-format
+msgctxt "@option:check"
+msgid "&Remember State on Exit"
+msgstr "&Запамти стање при изласку"
+
+#: mainwindow.cpp:281
+#, kde-format
+msgctxt "@action"
+msgid "Generate a Theme Preview Image"
+msgstr "Генериши слику прегледа теме"
+
+#: mainwindow.cpp:286
+#, kde-format
+msgctxt "@action"
+msgid "Take Game Preview Snapshots"
+msgstr "Снимак прегледа игре"
+
+#: mainwindow.cpp:291
+#, kde-format
+msgctxt "@action"
+msgid "Random Cards"
+msgstr "Случајне карте"
+
+#: mainwindow.cpp:298
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Previous Pile"
+msgstr "Помјери фокус на претходну гомилу"
+
+#: mainwindow.cpp:302
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Next Pile"
+msgstr "Помјери фокус на сљедећу гомилу"
+
+#: mainwindow.cpp:306
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Card Below"
+msgstr "Помјери фокус на карту испод"
+
+#: mainwindow.cpp:310
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Card Above"
+msgstr "Помјери фокус на карту изнад"
+
+#: mainwindow.cpp:314
+#, kde-format
+msgctxt "@action"
+msgid "Cancel Focus"
+msgstr "Откажи фокус"
+
+#: mainwindow.cpp:318
+#, kde-format
+msgctxt "@action"
+msgid "Pick Up or Set Down Focus"
+msgstr "Подигни или спусти фокусиране карте"
+
+#: mainwindow.cpp:426
+#, kde-format
+msgctxt "@title:tab"
+msgid "Card Deck"
+msgstr "Шпил карата"
+
+# >> @title:window
+#: mainwindow.cpp:428
+#, kde-format
+msgid "Select a card deck"
+msgstr "Избор шпила карата"
+
+#: mainwindow.cpp:434
+#, kde-format
+msgctxt "@title:tab"
+msgid "Game Theme"
+msgstr "Тема игре"
+
+#: mainwindow.cpp:436
+#, kde-format
+msgid "Select a theme for non-card game elements"
+msgstr "Изаберите тему за елементе игре осим шпила карата"
+
+# >> %1 is game type
+#: mainwindow.cpp:514
+#, kde-format
+msgctxt ""
+"@action Is disabled and changes to \"Help &with Current Game\" when there is "
+"no current game."
+msgid "Help &with %1"
+msgstr "Помоћ &за %1|/|Помоћ &за $[аку %1]"
+
+#: mainwindow.cpp:545
+#, kde-format
+msgctxt "@action Shown when there is no game open. Is always disabled."
+msgid "Help &with Current Game"
+msgstr "Помоћ &за текућу игру"
+
+#: mainwindow.cpp:700
+#, kde-format
+msgid ""
+"Are you sure you want to hide the menubar? The current shortcut to show it "
+"again is %1."
+msgstr ""
+"Желите ли заиста да сакријете траку менија? Пречица за њено поновно дозивање "
+"је %1."
+
+# >> @title:window
+#: mainwindow.cpp:702
+#, kde-format
+msgctxt "@title:window"
+msgid "Hide Menubar"
+msgstr "Сакривање траке менија"
+
+#: mainwindow.cpp:795
+#, kde-format
+msgid "Downloading file failed: %1"
+msgstr "Преузимање фајла није успјело: %1"
+
+#: mainwindow.cpp:801
+#, kde-format
+msgid "Error reading XML file: "
+msgstr "Грешка при читању ИксМЛ фајла:"
+
+# rewrite-msgid: /save/saved game/
+#: mainwindow.cpp:818
+#, kde-format
+msgid "XML file is not a KPat save."
+msgstr "ИксМЛ фајл није позиција К‑пасијанса."
+
+#: mainwindow.cpp:823
+#, kde-format
+msgid "Unrecognized game id."
+msgstr "Непрепознат ИД игре."
+
+#: mainwindow.cpp:842
+#, kde-format
+msgid "Errors encountered while parsing file."
+msgstr "Грешке при рашчлањивању фајла."
+
+# >> @title:window
+#: mainwindow.cpp:861
+#, kde-format
+msgctxt "@title:window"
+msgid "Load Game"
+msgstr "Учитавање позиције"
+
+# >> @title:window
+#: mainwindow.cpp:888
+#, kde-format
+msgctxt "@title:window"
+msgid "Save Game"
+msgstr "Уписивање позиције"
+
+#: mainwindow.cpp:904
+#, kde-format
+msgid "Error opening file for writing. Saving failed."
+msgstr "Грешка при отварању фајла за писање. Уписивање није успјело."
+
+#: mainwindow.cpp:909
+#, kde-format
+msgid "Unable to create temporary file. Saving failed."
+msgstr "Не могу да направим привремени фајл. Уписивање није успјело."
+
+#: mainwindow.cpp:925
+#, kde-format
+msgid "Error uploading file. Saving failed: %1"
+msgstr "Грешка при отпремању фајла. Уписивање није успјело: %1"
+
+#: mainwindow.cpp:949
+#, kde-format
+msgid "1 move"
+msgid_plural "%1 moves"
+msgstr[0] "%1 потез"
+msgstr[1] "%1 потеза"
+msgstr[2] "%1 потеза"
+msgstr[3] "1 потез"
+
+# >> @item game type
+#: mod3.cpp:218
+msgid "Mod3"
+msgstr "мод‑3|/|$[својства аку 'мод‑3']"
+
+#: normandy.cpp:166
+msgid "Normandy"
+msgstr "нормандија|/|$[својства аку 'нормандију']"
+
+#: numbereddealdialog.cpp:36
+#, kde-format
+msgctxt "@title:window"
+msgid "New Numbered Deal"
+msgstr "Ново нумерисано дијељење"
+
+#: numbereddealdialog.cpp:51
+#, kde-format
+msgctxt "@label"
+msgid "Game:"
+msgstr "Партија:"
+
+#: numbereddealdialog.cpp:55
+#, kde-format
+msgctxt "@label"
+msgid "Deal number:"
+msgstr "Број дијељења:"
+
+# >> @item game type
+#: simon.cpp:168
+msgid "Simple Simon"
+msgstr "прости сајмон|/|$[својства аку 'простог сајмона']"
+
+#: spider.cpp:132
+#, kde-format
+msgctxt "@title:menu"
+msgid "Spider &Options"
+msgstr "Опције &паука"
+
+#: spider.cpp:133
+#, kde-format
+msgctxt "@item:inmenu spider option"
+msgid "1 Suit (Easy)"
+msgstr "једна боја (лако)"
+
+#: spider.cpp:134
+#, kde-format
+msgctxt "@item:inmenu spider option"
+msgid "2 Suits (Medium)"
+msgstr "двије боје (средње)"
+
+#: spider.cpp:135
+#, kde-format
+msgctxt "@item:inmenu spider option"
+msgid "3 Suits (Hard)"
+msgstr "три боје (тешко)"
+
+#: spider.cpp:136
+#, kde-format
+msgctxt "@item:inmenu spider option"
+msgid "4 Suits (Very Hard)"
+msgstr "четири боје (веома тешко)"
+
+# >> @item game type
+#: spider.cpp:469
+msgid "Spider"
+msgstr "паук|/|$[својства аку 'паука']"
+
+#: spider.cpp:472
+msgid "Spider (1 Suit)"
+msgstr "паук (једна боја)"
+
+#: spider.cpp:473
+msgid "Spider (2 Suit)"
+msgstr "паук (двије боје)"
+
+#: spider.cpp:474
+msgid "Spider (3 Suit)"
+msgstr "паук (три боје)"
+
+#: spider.cpp:475
+msgid "Spider (4 Suit)"
+msgstr "паук (четири боје)"
+
+#: statisticsdialog.cpp:61
+#, kde-format
+msgctxt "@title:window"
+msgid "Statistics"
+msgstr "Статистика"
+
+#: statisticsdialog.cpp:122
+#, kde-format
+msgid "%1 (%2%)"
+msgstr "%1 (%2%)"
+
+#: statisticsdialog.cpp:134
+#, kde-format
+msgid "1 loss"
+msgid_plural "%1 losses"
+msgstr[0] "%1 пораз"
+msgstr[1] "%1 пораза"
+msgstr[2] "%1 пораза"
+msgstr[3] "1 пораз"
+
+#: statisticsdialog.cpp:136
+#, kde-format
+msgid "1 win"
+msgid_plural "%1 wins"
+msgstr[0] "%1 побједа"
+msgstr[1] "%1 побједе"
+msgstr[2] "%1 побиједа"
+msgstr[3] "1 побједа"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, GameStats)
+#: statisticsdialog.ui:13
+#, kde-format
+msgid "Statistics"
+msgstr "Статистика"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel1)
+#: statisticsdialog.ui:30
+#, kde-format
+msgid "Game:"
+msgstr "Партија:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel7)
+#: statisticsdialog.ui:66
+#, kde-format
+msgid "Longest winning streak:"
+msgstr "Најдужи низ побиједа:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel2)
+#: statisticsdialog.ui:73
+#, kde-format
+msgid "Games played:"
+msgstr "Одиграних партија:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel8)
+#: statisticsdialog.ui:90
+#, kde-format
+msgid "Longest losing streak:"
+msgstr "Најдужи низ пораза:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel3)
+#: statisticsdialog.ui:107
+#, kde-format
+msgid "Games won:"
+msgstr "Добијених партија:"
+
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: statisticsdialog.ui:124
+#, kde-format
+msgid "Current streak:"
+msgstr "Тренутни низ:"
+
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: statisticsdialog.ui:138
+#, kde-format
+msgid "Minimal number of moves:"
+msgstr "Најмањи број потеза:"
+
+# >> @item game type
+#: yukon.cpp:120
+msgid "Yukon"
+msgstr "јукон|/|$[својства аку 'јукон']"

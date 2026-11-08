@@ -1,0 +1,1378 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Sairan Kikkarin <sairan@computer.org>, 2012, 2013.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2026-10-15 00:42+0000\n"
+"PO-Revision-Date: 2013-07-11 03:47+0600\n"
+"Last-Translator: Sairan Kikkarin <sairan@computer.org>\n"
+"Language-Team: Kazakh <kde-i18n-doc@kde.org>\n"
+"Language: kk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Lokalize 1.2\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Сайран Киккарин"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "sairan@computer.org"
+
+#: bakersdozen.cpp:69 castle.cpp:361 freecell.cpp:347
+#, kde-format
+msgctxt "@title:menu"
+msgid "Popular Variant Presets"
+msgstr ""
+
+#: bakersdozen.cpp:70
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Baker's Dozen"
+msgstr ""
+
+#: bakersdozen.cpp:71
+#, fuzzy, kde-format
+#| msgid "KPatience"
+msgctxt "@item:inmenu preset"
+msgid "Spanish Patience"
+msgstr "KPatience"
+
+#: bakersdozen.cpp:72
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Castles in Spain"
+msgstr ""
+
+#: bakersdozen.cpp:73
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Portuguese Solitaire"
+msgstr ""
+
+#: bakersdozen.cpp:74 castle.cpp:368 freecell.cpp:353
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Custom"
+msgstr ""
+
+#: bakersdozen.cpp:76 castle.cpp:370 freecell.cpp:355
+#, kde-format
+msgctxt "@title:menu"
+msgid "Empty Stack Fill"
+msgstr ""
+
+#: bakersdozen.cpp:77 castle.cpp:371 freecell.cpp:356
+#, fuzzy, kde-format
+#| msgid "1 Suit (Easy)"
+msgctxt "@item:inmenu empty stack fill"
+msgid "Any (Easy)"
+msgstr "! түс (Оңай)"
+
+#: bakersdozen.cpp:78 castle.cpp:372 freecell.cpp:357
+#, fuzzy, kde-format
+#| msgid "2 Suits (Medium)"
+msgctxt "@item:inmenu empty stack fill"
+msgid "Kings only (Medium)"
+msgstr "2 түс (Орташа)"
+
+#: bakersdozen.cpp:79 castle.cpp:373 freecell.cpp:358
+#, kde-format
+msgctxt "@item:inmenu empty stack fill"
+msgid "None (Hard)"
+msgstr ""
+
+#: bakersdozen.cpp:81 castle.cpp:394 spider.cpp:147
+#, fuzzy, kde-format
+#| msgid "Spider &Options"
+msgctxt "@title:menu"
+msgid "Stack Options"
+msgstr "Өрмекшінің &параметрлері"
+
+#: bakersdozen.cpp:82 spider.cpp:149
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Up (Easier)"
+msgstr ""
+
+#: bakersdozen.cpp:83 spider.cpp:148
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Down (Harder)"
+msgstr ""
+
+#: bakersdozen.cpp:85 castle.cpp:375 freecell.cpp:360
+#, kde-format
+msgctxt "@title:menu"
+msgid "Build Sequence"
+msgstr ""
+
+#: bakersdozen.cpp:86 castle.cpp:376 freecell.cpp:361
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Alternating Color"
+msgstr ""
+
+#: bakersdozen.cpp:87 castle.cpp:377 freecell.cpp:362
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Matching Suit"
+msgstr ""
+
+#: bakersdozen.cpp:88 castle.cpp:378 freecell.cpp:363
+#, kde-format
+msgctxt "@item:inmenu build sequence"
+msgid "Rank"
+msgstr ""
+
+#: bakersdozen.cpp:238 bakersdozen.cpp:241
+msgid "Baker's Dozen"
+msgstr ""
+
+#: bakersdozen.cpp:242
+#, fuzzy
+#| msgid "KPatience"
+msgid "Spanish Patience"
+msgstr "KPatience"
+
+#: bakersdozen.cpp:243
+msgid "Castles in Spain"
+msgstr ""
+
+#: bakersdozen.cpp:244
+msgid "Portuguese Solitaire"
+msgstr ""
+
+#: bakersdozen.cpp:245
+msgid "Baker's Dozen (Custom)"
+msgstr ""
+
+#: bizilizi.cpp:204
+#, fuzzy, kde-format
+#| msgid "Klondike &Options"
+msgctxt "@title:menu"
+msgid "Bizilizi &Options"
+msgstr "Клондайк &параметрлері"
+
+#: bizilizi.cpp:205
+#, kde-format
+msgctxt "@item:inmenu bizilizi option"
+msgid "23 Covered Cards"
+msgstr ""
+
+#: bizilizi.cpp:206
+#, kde-format
+msgctxt "@item:inmenu bizilizi option"
+msgid "24 Covered Cards"
+msgstr ""
+
+#: bizilizi.cpp:210
+#, kde-format
+msgctxt "@title:menu"
+msgid "Pool Analysis"
+msgstr ""
+
+#: bizilizi.cpp:211
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Off"
+msgstr ""
+
+#: bizilizi.cpp:212
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Instant"
+msgstr ""
+
+#: bizilizi.cpp:213
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 4"
+msgstr ""
+
+#: bizilizi.cpp:214
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 10"
+msgstr ""
+
+#: bizilizi.cpp:215
+#, kde-format
+msgctxt "@item:inmenu analysis option"
+msgid "Wait 18"
+msgstr ""
+
+#: bizilizi.cpp:219
+#, kde-format
+msgctxt "@title:menu"
+msgid "Delayed Hints"
+msgstr ""
+
+#: bizilizi.cpp:220
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "Off"
+msgstr ""
+
+#: bizilizi.cpp:221
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "6 Seconds"
+msgstr ""
+
+#: bizilizi.cpp:222
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "14 Seconds"
+msgstr ""
+
+#: bizilizi.cpp:223
+#, kde-format
+msgctxt "@item:inmenu ridehints option"
+msgid "22 Seconds"
+msgstr ""
+
+#: bizilizi.cpp:917
+msgid "Bizilizi"
+msgstr ""
+
+#: bizilizi.cpp:920
+msgid "Bizilizi (23 Covered)"
+msgstr ""
+
+#: bizilizi.cpp:921
+msgid "Bizilizi (24 Covered)"
+msgstr ""
+
+#: castle.cpp:319
+msgid "Castle"
+msgstr ""
+
+#: castle.cpp:322
+msgid "Beleaguered Castle"
+msgstr ""
+
+#: castle.cpp:323
+msgid "Citadel"
+msgstr ""
+
+#: castle.cpp:324
+msgid "Exiled Kings"
+msgstr ""
+
+#: castle.cpp:325
+msgid "Streets and Alleys"
+msgstr ""
+
+#: castle.cpp:326
+msgid "Siegecraft"
+msgstr ""
+
+#: castle.cpp:327
+msgid "Stronghold"
+msgstr ""
+
+#: castle.cpp:328
+#, fuzzy
+#| msgid "Freecell"
+msgid "Castle (Custom)"
+msgstr "Freecell"
+
+#: castle.cpp:362
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Beleaguered Castle"
+msgstr ""
+
+#: castle.cpp:363
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Citadel"
+msgstr ""
+
+#: castle.cpp:364
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Exiled Kings"
+msgstr ""
+
+#: castle.cpp:365
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Streets and Alleys"
+msgstr ""
+
+#: castle.cpp:366
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Siegecraft"
+msgstr ""
+
+#: castle.cpp:367
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Stronghold"
+msgstr ""
+
+#: castle.cpp:380 freecell.cpp:365
+#, fuzzy, kde-format
+#| msgid "Freecell"
+msgctxt "@title:menu"
+msgid "Free Cells"
+msgstr "Freecell"
+
+#: castle.cpp:381 freecell.cpp:366
+#, kde-format
+msgid "0"
+msgstr ""
+
+#: castle.cpp:382 freecell.cpp:367 freecell.cpp:386
+#, kde-format
+msgid "1"
+msgstr ""
+
+#: castle.cpp:383 freecell.cpp:368 freecell.cpp:387
+#, kde-format
+msgid "2"
+msgstr ""
+
+#: castle.cpp:384 freecell.cpp:369 freecell.cpp:388
+#, kde-format
+msgid "3"
+msgstr ""
+
+#: castle.cpp:385 freecell.cpp:370
+#, kde-format
+msgid "4"
+msgstr ""
+
+#: castle.cpp:387 freecell.cpp:376
+#, fuzzy, kde-format
+#| msgid "Spider &Options"
+msgctxt "@title:menu"
+msgid "Stacks"
+msgstr "Өрмекшінің &параметрлері"
+
+#: castle.cpp:388 freecell.cpp:372 freecell.cpp:377
+#, kde-format
+msgid "6"
+msgstr ""
+
+#: castle.cpp:389 freecell.cpp:373 freecell.cpp:378
+#, kde-format
+msgid "7"
+msgstr ""
+
+#: castle.cpp:390 freecell.cpp:374 freecell.cpp:379
+#, kde-format
+msgid "8"
+msgstr ""
+
+#: castle.cpp:391 freecell.cpp:380
+#, kde-format
+msgid "9"
+msgstr ""
+
+#: castle.cpp:392 freecell.cpp:381
+#, kde-format
+msgid "10"
+msgstr ""
+
+#: castle.cpp:395
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Down"
+msgstr ""
+
+#: castle.cpp:396
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Face Up"
+msgstr ""
+
+#: castle.cpp:397
+#, kde-format
+msgctxt "@item:inmenu stack option"
+msgid "Alternating Face Up"
+msgstr ""
+
+#: castle.cpp:399
+#, kde-format
+msgctxt "@title:menu"
+msgid "Foundation Deal"
+msgstr ""
+
+#: castle.cpp:400
+#, kde-format
+msgctxt "@item:inmenu foundation deal"
+msgid "None"
+msgstr ""
+
+#: castle.cpp:401
+#, fuzzy, kde-format
+#| msgid "Aces Up"
+msgctxt "@item:inmenu foundation deal"
+msgid "Aces"
+msgstr "Тұздар жоғарыда"
+
+#: castle.cpp:402
+#, kde-format
+msgctxt "@item:inmenu foundation deal"
+msgid "Any"
+msgstr ""
+
+#: castle.cpp:404
+#, kde-format
+msgctxt "@title:menu"
+msgid "Layout"
+msgstr ""
+
+#: castle.cpp:405
+#, kde-format
+msgctxt "@item:inmenu layout"
+msgid "Classic"
+msgstr ""
+
+#: castle.cpp:406
+#, kde-format
+msgctxt "@item:inmenu layout"
+msgid "Modern"
+msgstr ""
+
+#: clock.cpp:157
+msgid "Grandfather's Clock"
+msgstr "Атаның сағаты"
+
+#: dealer.cpp:72
+#, kde-format
+msgid "Solver: This game is winnable."
+msgstr "Шешім құралы: ойынды ұтуға болады."
+
+#: dealer.cpp:74
+#, kde-format
+msgid "Solver: This game is no longer winnable."
+msgstr "Шешім құралы: ойынды енді ұтуға болмайады."
+
+#: dealer.cpp:74
+#, kde-format
+msgid "Solver: This game cannot be won."
+msgstr "Шешім құралы: ойынды ұтуға болмайады."
+
+#: dealer.cpp:76
+#, kde-format
+msgid "Solver: Unable to determine if this game is winnable."
+msgstr "Шешім құралы: ойынды ұтуға бола ма-болмай ма анықтауға келмейді"
+
+#: dealer.cpp:943
+#, kde-format
+msgid "Congratulations! We have won."
+msgstr "Құттықтаймыз, біз ұттық."
+
+#: dealer.cpp:945
+#, kde-format
+msgid "Congratulations! You have won."
+msgstr "Құттықтаймыз, Сіз ұттыңыз"
+
+#: dealer.cpp:1233
+#, kde-format
+msgid "Solver: This game is lost."
+msgstr "Шешім құралы: ұтылдыңыз."
+
+#: dealer.cpp:1374
+#, fuzzy, kde-format
+#| msgid "Solver: Calculating..."
+msgid "Solver: Calculating…"
+msgstr "Шешім құралы: Есептеу..."
+
+#: dealer.cpp:1781
+#, kde-format
+msgid ""
+"A new game has been requested, but there is already a game in progress.\n"
+"\n"
+"A loss will be recorded in the statistics if the current game is abandoned."
+msgstr ""
+"Бір ойын бітпей, жаңасы талап етілді.\n"
+"\n"
+"Ойын үзілсе - жеңіліс деп жазылады."
+
+#: dealer.cpp:1783
+#, fuzzy, kde-format
+#| msgid "Abandon Current Game?"
+msgctxt "@title:window"
+msgid "Abandon Current Game?"
+msgstr "Ойынды үзесіз бе?"
+
+#: dealer.cpp:1784
+#, fuzzy, kde-format
+#| msgid "Abandon Current Game"
+msgctxt "@action:button"
+msgid "Abandon Current Game"
+msgstr "Ойын үзілсін"
+
+#: fortyeight.cpp:229
+msgid "Forty & Eight"
+msgstr "Қырық пен сегіз"
+
+#: freecell.cpp:308 freecell.cpp:314
+msgid "Freecell"
+msgstr "Freecell"
+
+#: freecell.cpp:311
+msgid "Baker's Game"
+msgstr ""
+
+#: freecell.cpp:312
+msgid "Eight Off"
+msgstr ""
+
+#: freecell.cpp:313
+#, fuzzy
+#| msgid "Freecell"
+msgid "Forecell"
+msgstr "Freecell"
+
+#: freecell.cpp:315
+msgid "Seahaven Towers"
+msgstr ""
+
+#: freecell.cpp:316
+#, fuzzy
+#| msgid "Freecell"
+msgid "Freecell (Custom)"
+msgstr "Freecell"
+
+#: freecell.cpp:348
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Baker's Game"
+msgstr ""
+
+#: freecell.cpp:349
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Eight Off"
+msgstr ""
+
+#: freecell.cpp:350
+#, fuzzy, kde-format
+#| msgid "Freecell"
+msgctxt "@item:inmenu preset"
+msgid "Forecell"
+msgstr "Freecell"
+
+#: freecell.cpp:351
+#, fuzzy, kde-format
+#| msgid "Freecell"
+msgctxt "@item:inmenu preset"
+msgid "Freecell"
+msgstr "Freecell"
+
+#: freecell.cpp:352
+#, kde-format
+msgctxt "@item:inmenu preset"
+msgid "Seahaven Towers"
+msgstr ""
+
+#: freecell.cpp:371
+#, kde-format
+msgid "5"
+msgstr ""
+
+#: freecell.cpp:382
+#, kde-format
+msgid "11"
+msgstr ""
+
+#: freecell.cpp:383
+#, kde-format
+msgid "12"
+msgstr ""
+
+#: freecell.cpp:385
+#, kde-format
+msgctxt "@title:menu"
+msgid "Decks"
+msgstr ""
+
+#: golf.cpp:189
+msgid "Golf"
+msgstr "Гольф"
+
+#: grandf.cpp:188
+msgid "Grandfather"
+msgstr "Ата"
+
+#: idiot.cpp:225
+msgid "Aces Up"
+msgstr "Тұздар жоғарыда"
+
+#: klondike.cpp:135
+#, fuzzy, kde-format
+#| msgid "Klondike &Options"
+msgctxt "@title:menu"
+msgid "Klondike &Options"
+msgstr "Клондайк &параметрлері"
+
+#: klondike.cpp:136
+#, fuzzy, kde-format
+#| msgid "Draw 1"
+msgctxt "@item:inmenu klondike option"
+msgid "Draw 1"
+msgstr "1 картадан"
+
+#: klondike.cpp:137
+#, fuzzy, kde-format
+#| msgid "Draw 3"
+msgctxt "@item:inmenu klondike option"
+msgid "Draw 3"
+msgstr "3 картадан"
+
+#: klondike.cpp:313
+msgid "Klondike"
+msgstr "Клондайк"
+
+#: klondike.cpp:316
+msgid "Klondike (Draw 1)"
+msgstr "Клондайк (1 картадан)"
+
+#: klondike.cpp:317
+msgid "Klondike (Draw 3)"
+msgstr "Клондайк (3 картадан)"
+
+#. i18n: ectx: Menu (move)
+#: kpatui.rc:23
+#, kde-format
+msgid "Move"
+msgstr "Жүріс"
+
+#. i18n: ectx: ToolBar (mainToolBar)
+#: kpatui.rc:42
+#, kde-format
+msgid "Main Toolbar"
+msgstr "Негізгі құралдар"
+
+#: libkcardgame/kcardthemewidget.cpp:266
+#, fuzzy, kde-format
+#| msgid "Loading..."
+msgctxt "@info"
+msgid "Loading…"
+msgstr "Жүктеу..."
+
+#: libkcardgame/kcardthemewidget.cpp:352
+#, fuzzy, kde-format
+#| msgid "Get New Card Decks..."
+msgctxt "@action:button"
+msgid "Download New Card Decks…"
+msgstr "Жаңа карта дестесін табу..."
+
+#: main.cpp:89
+#, kde-format
+msgid "KPatience"
+msgstr "KPatience"
+
+#: main.cpp:91
+#, kde-format
+msgid "KDE Patience Game"
+msgstr "KDE Пасьянс ойны"
+
+#: main.cpp:93
+#, kde-format
+msgid ""
+"© 1995 Paul Olav Tvete\n"
+"© 2000 Stephan Kulow"
+msgstr ""
+"© 1995 Paul Olav Tvete\n"
+"© 2000 Stephan Kulow"
+
+#: main.cpp:97
+#, kde-format
+msgid "Paul Olav Tvete"
+msgstr "Paul Olav Tvete"
+
+#: main.cpp:97
+#, kde-format
+msgid "Author of original Qt version"
+msgstr "Бастапқы Qt нұсқасының авторы"
+
+#: main.cpp:98
+#, kde-format
+msgid "Mario Weilguni"
+msgstr "Mario Weilguni"
+
+#: main.cpp:98
+#, kde-format
+msgid "Initial KDE port"
+msgstr "KDE-ге бастапқы бейімдеу"
+
+#: main.cpp:99
+#, kde-format
+msgid "Matthias Ettrich"
+msgstr "Matthias Ettrich"
+
+#: main.cpp:100
+#, kde-format
+msgid "Rodolfo Borges"
+msgstr "Rodolfo Borges"
+
+#: main.cpp:100 main.cpp:113
+#, kde-format
+msgid "New game types"
+msgstr "Жаңа ойын түрлері"
+
+#: main.cpp:101
+#, kde-format
+msgid "Peter H. Ruegg"
+msgstr "Peter H. Ruegg"
+
+#: main.cpp:102
+#, kde-format
+msgid "Michael Koch"
+msgstr "Michael Koch"
+
+#: main.cpp:102 main.cpp:109
+#, kde-format
+msgid "Bug fixes"
+msgstr "Қателерді түзеу"
+
+#: main.cpp:103
+#, kde-format
+msgid "Marcus Meissner"
+msgstr "Marcus Meissner"
+
+#: main.cpp:103
+#, kde-format
+msgid "Shuffle algorithm for game numbers"
+msgstr "Ойын нөмерлерін араластыру алгоритмі"
+
+#: main.cpp:104
+#, kde-format
+msgid "Tom Holroyd"
+msgstr "Tom Holroyd"
+
+#: main.cpp:104
+#, kde-format
+msgid "Initial patience solver"
+msgstr "Бастапқы шешім құралы"
+
+#: main.cpp:105
+#, kde-format
+msgid "Stephan Kulow"
+msgstr "Stephan Kulow"
+
+#: main.cpp:105
+#, kde-format
+msgid "Rewrite and current maintainer"
+msgstr "Қайта жазып шыққан қазіргі жетілдірушісі"
+
+#: main.cpp:106
+#, kde-format
+msgid "Erik Sigra"
+msgstr "Erik Sigra"
+
+#: main.cpp:106
+#, kde-format
+msgid "Klondike improvements"
+msgstr "Клондайкты жақсарту"
+
+#: main.cpp:107
+#, kde-format
+msgid "Josh Metzler"
+msgstr "Josh Metzler"
+
+#: main.cpp:107
+#, kde-format
+msgid "Spider implementation"
+msgstr "\"Өрмекшіні\" іске асыруы"
+
+#: main.cpp:108
+#, kde-format
+msgid "Maren Pakura"
+msgstr "Maren Pakura"
+
+#: main.cpp:108
+#, kde-format
+msgid "Documentation"
+msgstr "Құжаттамасы"
+
+#: main.cpp:109
+#, kde-format
+msgid "Inge Wallin"
+msgstr "Inge Wallin"
+
+#: main.cpp:110
+#, kde-format
+msgid "Simon Hürlimann"
+msgstr "Simon Hürlimann"
+
+#: main.cpp:110
+#, kde-format
+msgid "Menu and toolbar work"
+msgstr "Мәзір мен құрал панелін істеу"
+
+#: main.cpp:111
+#, kde-format
+msgid "Parker Coates"
+msgstr "Parker Coates"
+
+#: main.cpp:111
+#, kde-format
+msgid "Cleanup and polish"
+msgstr "Тазалау мен жылтырату"
+
+#: main.cpp:112
+#, kde-format
+msgid "Shlomi Fish"
+msgstr ""
+
+#: main.cpp:112
+#, kde-format
+msgid "Integration with Freecell Solver and further work"
+msgstr ""
+
+#: main.cpp:113
+#, fuzzy, kde-format
+#| msgid "Michael Koch"
+msgid "Michael Lang"
+msgstr "Michael Koch"
+
+#: main.cpp:120
+#, kde-format
+msgid "Try to find a solution to the given savegame"
+msgstr "Сақталған ойының шешімін тауып көру"
+
+#: main.cpp:121
+#, kde-format
+msgid "Dealer to solve (debug)"
+msgstr "Шешімі (жөндеуге арналған)"
+
+#: main.cpp:122
+#, kde-format
+msgid "Game range start (default 0:INT_MAX)"
+msgstr "Бастау ауқымыt (әдеттегісі 0:INT_MAX)"
+
+#: main.cpp:124
+#, kde-format
+msgid "Game range end (default start:start if start given)"
+msgstr "Аяқтау ауқымы (әдеттегісі start:start бастауы белгілі болса)"
+
+#: main.cpp:127
+#, kde-format
+msgid ""
+"Skip the selection screen and load a particular game type. Valid values are: "
+"%1"
+msgstr "Экран таңдауын өткізіп, белгілі бір ойынды жүктеу. Жарамды мәні: %1"
+
+#: main.cpp:129
+#, kde-format
+msgid "Directory with test cases"
+msgstr "Сынақтар қапшығы"
+
+#: main.cpp:130
+#, kde-format
+msgid "Generate random test cases"
+msgstr "Кездейсоқ кездерді құру"
+
+#: main.cpp:131
+#, kde-format
+msgid "File to load"
+msgstr "Жүктейтін файл"
+
+#: main.cpp:327
+#, kde-format
+msgctxt "List separator"
+msgid ", "
+msgstr ", "
+
+#: mainwindow.cpp:152
+#, fuzzy, kde-format
+#| msgctxt "Start a new game of a different type"
+#| msgid "New &Game..."
+msgctxt "@action Start a new game of a different type"
+msgid "New &Game…"
+msgstr "Жаңа &ойын..."
+
+#: mainwindow.cpp:158
+#, fuzzy, kde-format
+#| msgctxt "Start a new game of without changing the game type"
+#| msgid "New &Deal"
+msgctxt "@action Start a new game of without changing the game type"
+msgid "New &Deal"
+msgstr "Жаңа &үлестіру"
+
+#: mainwindow.cpp:164
+#, fuzzy, kde-format
+#| msgid "New Numbered Deal"
+msgctxt "@action Start a game by giving its particular number"
+msgid "New &Numbered Deal…"
+msgstr "Жаңа нөмірлеген үлестіру"
+
+#: mainwindow.cpp:169
+#, fuzzy, kde-format
+#| msgctxt "Replay the current deal from the start"
+#| msgid "Restart Deal"
+msgctxt "@action Replay the current deal from the start"
+msgid "Restart Deal"
+msgstr "Жаңадан үлестіру"
+
+#: mainwindow.cpp:175
+#, fuzzy, kde-format
+#| msgctxt "Start the game with the number one greater than the current one"
+#| msgid "Next Deal"
+msgctxt ""
+"@action Start the game with the number one greater than the current one"
+msgid "Next Deal"
+msgstr "Келесі үлестіру"
+
+#: mainwindow.cpp:184
+#, fuzzy, kde-format
+#| msgctxt "Start the game with the number one less than the current one"
+#| msgid "Previous Deal"
+msgctxt "@action Start the game with the number one less than the current one"
+msgid "Previous Deal"
+msgstr "Алдыңғы үлестіру"
+
+#: mainwindow.cpp:198
+#, fuzzy, kde-format
+#| msgid "Statistics"
+msgctxt "@action"
+msgid "Statistics"
+msgstr "Статистика"
+
+#: mainwindow.cpp:227
+#, fuzzy, kde-format
+#| msgctxt ""
+#| "Take one or more cards from the deck, flip them, and place them in play"
+#| msgid "Dra&w"
+msgctxt ""
+"@action Take one or more cards from the deck, flip them, and place them in "
+"play"
+msgid "Dra&w"
+msgstr "Тарат&у"
+
+#: mainwindow.cpp:232
+#, fuzzy, kde-format
+#| msgctxt "Deal a new row of cards from the deck"
+#| msgid "Dea&l Row"
+msgctxt "@action Deal a new row of cards from the deck"
+msgid "Dea&l Row"
+msgstr "Қатарды үлестіру"
+
+#: mainwindow.cpp:237
+#, fuzzy, kde-format
+#| msgctxt "Collect the cards in play, shuffle them and redeal them"
+#| msgid "&Redeal"
+msgctxt "@action Collect the cards in play, shuffle them and redeal them"
+msgid "&Redeal"
+msgstr "&Жаңадан үлестіру"
+
+#: mainwindow.cpp:242
+#, fuzzy, kde-format
+#| msgctxt "Automatically move cards to the foundation piles"
+#| msgid "Dro&p"
+msgctxt "@action Automatically move cards to the foundation piles"
+msgid "Dro&p"
+msgstr "&Тастау"
+
+#: mainwindow.cpp:249
+#, fuzzy, kde-format
+#| msgid "&Enable Autodrop"
+msgctxt "@option:check"
+msgid "&Enable Autodrop"
+msgstr "Автотастау б&олсын"
+
+#: mainwindow.cpp:254
+#, fuzzy, kde-format
+#| msgid "E&nable Solver"
+msgctxt "@option:check"
+msgid "E&nable Solver"
+msgstr "Шешім құралы &рұқсат етілсін"
+
+#: mainwindow.cpp:259
+#, fuzzy, kde-format
+#| msgid "Play &Sounds"
+msgctxt "@option:check"
+msgid "Play Sounds"
+msgstr "&Дыбыспен ойнау"
+
+#: mainwindow.cpp:264
+#, fuzzy, kde-format
+#| msgid "&Remember State on Exit"
+msgctxt "@option:check"
+msgid "&Remember State on Exit"
+msgstr "Шықанда күй-жайы &жатталсын"
+
+#: mainwindow.cpp:281
+#, fuzzy, kde-format
+#| msgid "Generate a theme preview image"
+msgctxt "@action"
+msgid "Generate a Theme Preview Image"
+msgstr "Нақышын қарап-шығу кескінің құру"
+
+#: mainwindow.cpp:286
+#, fuzzy, kde-format
+#| msgid "Take Game Preview Snapshots"
+msgctxt "@action"
+msgid "Take Game Preview Snapshots"
+msgstr "Ойын көрінісі суретін түсіру"
+
+#: mainwindow.cpp:291
+#, fuzzy, kde-format
+#| msgid "Random Cards"
+msgctxt "@action"
+msgid "Random Cards"
+msgstr "Кездейсоқ карталар"
+
+#: mainwindow.cpp:298
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Previous Pile"
+msgstr ""
+
+#: mainwindow.cpp:302
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Next Pile"
+msgstr ""
+
+#: mainwindow.cpp:306
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Card Below"
+msgstr ""
+
+#: mainwindow.cpp:310
+#, kde-format
+msgctxt "@action"
+msgid "Move Focus to Card Above"
+msgstr ""
+
+#: mainwindow.cpp:314
+#, kde-format
+msgctxt "@action"
+msgid "Cancel Focus"
+msgstr ""
+
+#: mainwindow.cpp:318
+#, kde-format
+msgctxt "@action"
+msgid "Pick Up or Set Down Focus"
+msgstr ""
+
+#: mainwindow.cpp:426
+#, fuzzy, kde-format
+#| msgid "Card Deck"
+msgctxt "@title:tab"
+msgid "Card Deck"
+msgstr "Карта дестесі"
+
+#: mainwindow.cpp:428
+#, kde-format
+msgid "Select a card deck"
+msgstr "Карта дестесін таңдау"
+
+#: mainwindow.cpp:434
+#, fuzzy, kde-format
+#| msgid "Game Theme"
+msgctxt "@title:tab"
+msgid "Game Theme"
+msgstr "Ойын нақышы"
+
+#: mainwindow.cpp:436
+#, kde-format
+msgid "Select a theme for non-card game elements"
+msgstr "Картадан басқа ойын нақышын таңдау"
+
+#: mainwindow.cpp:514
+#, fuzzy, kde-format
+#| msgctxt ""
+#| "Is disabled and changes to \"Help &with Current Game\" when there is no "
+#| "current game."
+#| msgid "Help &with %1"
+msgctxt ""
+"@action Is disabled and changes to \"Help &with Current Game\" when there is "
+"no current game."
+msgid "Help &with %1"
+msgstr "%1 &ойынына көмек"
+
+#: mainwindow.cpp:545
+#, fuzzy, kde-format
+#| msgctxt "Shown when there is no game open. Is always disabled."
+#| msgid "Help &with Current Game"
+msgctxt "@action Shown when there is no game open. Is always disabled."
+msgid "Help &with Current Game"
+msgstr "Болып жатқан &ойынға көмек"
+
+#: mainwindow.cpp:700
+#, kde-format
+msgid ""
+"Are you sure you want to hide the menubar? The current shortcut to show it "
+"again is %1."
+msgstr ""
+"Мәзір панелін жасырмақсыз ба? %1 тіркесім көмегімен оны қайта шығаруға "
+"болады."
+
+#: mainwindow.cpp:702
+#, fuzzy, kde-format
+#| msgid "Hide Menubar"
+msgctxt "@title:window"
+msgid "Hide Menubar"
+msgstr "Мәзірді жасыру"
+
+#: mainwindow.cpp:795
+#, fuzzy, kde-format
+#| msgid "Downloading file failed."
+msgid "Downloading file failed: %1"
+msgstr "Жүктеп алу жыңылысы."
+
+#: mainwindow.cpp:801
+#, kde-format
+msgid "Error reading XML file: "
+msgstr "XML файлын оқығандағы қате: "
+
+#: mainwindow.cpp:818
+#, kde-format
+msgid "XML file is not a KPat save."
+msgstr "XML файлы сақталған KPat файлы емес."
+
+#: mainwindow.cpp:823
+#, kde-format
+msgid "Unrecognized game id."
+msgstr "Ойынның идентификаторы түсініксіз."
+
+#: mainwindow.cpp:842
+#, kde-format
+msgid "Errors encountered while parsing file."
+msgstr "Файлды талдағанда қате табылды."
+
+#: mainwindow.cpp:861
+#, fuzzy, kde-format
+#| msgid "Load"
+msgctxt "@title:window"
+msgid "Load Game"
+msgstr "Жүктеу"
+
+#: mainwindow.cpp:888
+#, fuzzy, kde-format
+#| msgid "Save"
+msgctxt "@title:window"
+msgid "Save Game"
+msgstr "Сақтау"
+
+#: mainwindow.cpp:904
+#, kde-format
+msgid "Error opening file for writing. Saving failed."
+msgstr "Файлды жазу үшін ашу қатесі. Сақтау жаңылды."
+
+#: mainwindow.cpp:909
+#, kde-format
+msgid "Unable to create temporary file. Saving failed."
+msgstr "Уақытша файл құрылмады. Сақтау жаңылысы."
+
+#: mainwindow.cpp:925
+#, fuzzy, kde-format
+#| msgid "Error uploading file. Saving failed."
+msgid "Error uploading file. Saving failed: %1"
+msgstr "Файлды жүктеп беру қатесі Сақтау жаңылды."
+
+#: mainwindow.cpp:949
+#, kde-format
+msgid "1 move"
+msgid_plural "%1 moves"
+msgstr[0] "%1 жүріс"
+
+#: mod3.cpp:218
+msgid "Mod3"
+msgstr "Mod3"
+
+#: normandy.cpp:166
+msgid "Normandy"
+msgstr ""
+
+#: numbereddealdialog.cpp:36
+#, fuzzy, kde-format
+#| msgid "New Numbered Deal"
+msgctxt "@title:window"
+msgid "New Numbered Deal"
+msgstr "Жаңа нөмірлеген үлестіру"
+
+#: numbereddealdialog.cpp:51
+#, fuzzy, kde-format
+#| msgid "Game:"
+msgctxt "@label"
+msgid "Game:"
+msgstr "Ойын:"
+
+#: numbereddealdialog.cpp:55
+#, fuzzy, kde-format
+#| msgid "Deal number:"
+msgctxt "@label"
+msgid "Deal number:"
+msgstr "Үлестірім саны:"
+
+#: simon.cpp:168
+msgid "Simple Simon"
+msgstr "Аңқау Симон"
+
+#: spider.cpp:132
+#, fuzzy, kde-format
+#| msgid "Spider &Options"
+msgctxt "@title:menu"
+msgid "Spider &Options"
+msgstr "Өрмекшінің &параметрлері"
+
+#: spider.cpp:133
+#, fuzzy, kde-format
+#| msgid "1 Suit (Easy)"
+msgctxt "@item:inmenu spider option"
+msgid "1 Suit (Easy)"
+msgstr "! түс (Оңай)"
+
+#: spider.cpp:134
+#, fuzzy, kde-format
+#| msgid "2 Suits (Medium)"
+msgctxt "@item:inmenu spider option"
+msgid "2 Suits (Medium)"
+msgstr "2 түс (Орташа)"
+
+#: spider.cpp:135
+#, fuzzy, kde-format
+#| msgid "4 Suits (Hard)"
+msgctxt "@item:inmenu spider option"
+msgid "3 Suits (Hard)"
+msgstr "4 түс (Қиын)"
+
+#: spider.cpp:136
+#, fuzzy, kde-format
+#| msgid "4 Suits (Hard)"
+msgctxt "@item:inmenu spider option"
+msgid "4 Suits (Very Hard)"
+msgstr "4 түс (Қиын)"
+
+#: spider.cpp:469
+msgid "Spider"
+msgstr "Өрмекші"
+
+#: spider.cpp:472
+msgid "Spider (1 Suit)"
+msgstr "Өрмекші (1 түс)"
+
+#: spider.cpp:473
+msgid "Spider (2 Suit)"
+msgstr "Өрмекші (2 түс)"
+
+#: spider.cpp:474
+#, fuzzy
+#| msgid "Spider (1 Suit)"
+msgid "Spider (3 Suit)"
+msgstr "Өрмекші (1 түс)"
+
+#: spider.cpp:475
+msgid "Spider (4 Suit)"
+msgstr "Өрмекші (4 түс)"
+
+#: statisticsdialog.cpp:61
+#, fuzzy, kde-format
+#| msgid "Statistics"
+msgctxt "@title:window"
+msgid "Statistics"
+msgstr "Статистика"
+
+#: statisticsdialog.cpp:122
+#, kde-format
+msgid "%1 (%2%)"
+msgstr "%1 (%2%)"
+
+#: statisticsdialog.cpp:134
+#, kde-format
+msgid "1 loss"
+msgid_plural "%1 losses"
+msgstr[0] "%1 ұтылыс"
+
+#: statisticsdialog.cpp:136
+#, kde-format
+msgid "1 win"
+msgid_plural "%1 wins"
+msgstr[0] "%1 жеңіс"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, GameStats)
+#: statisticsdialog.ui:13
+#, kde-format
+msgid "Statistics"
+msgstr "Статистика"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel1)
+#: statisticsdialog.ui:30
+#, kde-format
+msgid "Game:"
+msgstr "Ойын:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel7)
+#: statisticsdialog.ui:66
+#, kde-format
+msgid "Longest winning streak:"
+msgstr "Ең ұзақ жеңістер қатары"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel2)
+#: statisticsdialog.ui:73
+#, kde-format
+msgid "Games played:"
+msgstr "Ойналған ойындар:"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel8)
+#: statisticsdialog.ui:90
+#, kde-format
+msgid "Longest losing streak:"
+msgstr "Ең ұзақ жеңілістер қатары"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel3)
+#: statisticsdialog.ui:107
+#, kde-format
+msgid "Games won:"
+msgstr "Ұтқан ойындар:"
+
+#. i18n: ectx: property (text), widget (QLabel, label)
+#: statisticsdialog.ui:124
+#, kde-format
+msgid "Current streak:"
+msgstr "Қазіргі қатар:"
+
+#. i18n: ectx: property (text), widget (QLabel, label_2)
+#: statisticsdialog.ui:138
+#, kde-format
+msgid "Minimal number of moves:"
+msgstr ""
+
+#: yukon.cpp:120
+msgid "Yukon"
+msgstr "Юкон"
+
+#~ msgid "Gypsy"
+#~ msgstr "Сыған"
+
+#, fuzzy
+#~| msgid "Spider &Options"
+#~ msgid "S&tack Options"
+#~ msgstr "Өрмекшінің &параметрлері"
+
+#, fuzzy
+#~| msgid "Freecell"
+#~ msgid "Free cells"
+#~ msgstr "Freecell"
+
+#~ msgctxt "Start a game by giving its particular number"
+#~ msgid "New &Numbered Deal..."
+#~ msgstr "Жаңа &нөмірлеген үлестіру..."
+
+#~ msgid "Change Appearance..."
+#~ msgstr "Көрінісін өзгерту..."
+
+#~ msgid "Opening file failed."
+#~ msgstr "Файлды ашу жаңылысы."

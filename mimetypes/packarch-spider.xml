@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: CC0-1.0 -->
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-packarch-spider-savedgame">
+    <comment>Packarch Spider saved game</comment>
+    <comment xml:lang="fr">Partie enregistrée de Packarch Spider</comment>
+    <sub-class-of type="application/xml"/>
+    <glob pattern="*.pspider" weight="75"/>
+    <root-XML namespaceURI="" localName="kpat-game"/>
+  </mime-type>
+  <mime-type type="application/x-packarch-spider-savedstate">
+    <comment>Packarch Spider saved game (legacy format)</comment>
+    <comment xml:lang="fr">Partie enregistrée de Packarch Spider (ancien format)</comment>
+    <sub-class-of type="application/xml"/>
+    <glob pattern="*.pspider-legacy" weight="75"/>
+    <root-XML namespaceURI="" localName="dealer"/>
+  </mime-type>
+</mime-info>
