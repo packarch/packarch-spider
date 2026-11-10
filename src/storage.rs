@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use crate::board::{AnyGame, GameKind, Variant};
-use crate::freecell;
+use crate::{bakers, freecell};
 use crate::spider;
 
 const APP: &str = "packarch-spider";
@@ -70,6 +70,8 @@ pub struct Settings {
     pub toolbar_text: bool,
     /// FreeCell : variante et options.
     pub freecell: freecell::Options,
+    /// Treize à la douzaine : variante et options.
+    pub bakers: bakers::Options,
     /// FreeCell et Klondike : dépôt automatique sur les fondations.
     pub autodrop: bool,
     /// Klondike : cartes retournées à chaque pioche (1 ou 3).
@@ -90,6 +92,7 @@ impl Default for Settings {
             toolbar_text: false,
             game: GameKind::Spider,
             freecell: freecell::Options::default(),
+            bakers: bakers::Options::default(),
             autodrop: true,
             klondike_draw: 1,
         }
@@ -150,6 +153,8 @@ pub struct Stats {
     pub aces_up: VariantStats,
     /// Quarante & Huit.
     pub forty_eight: VariantStats,
+    /// Treize à la douzaine, par variante (`bakers::PRESETS`, puis personnalisée).
+    pub bakers: [VariantStats; bakers::VARIANTS],
 }
 
 impl Stats {
@@ -174,6 +179,7 @@ impl Stats {
             Variant::Mod3 => &self.mod3,
             Variant::AcesUp => &self.aces_up,
             Variant::FortyEight => &self.forty_eight,
+            Variant::Bakers(v) => &self.bakers[v.min(bakers::CUSTOM)],
         }
     }
 
@@ -190,6 +196,7 @@ impl Stats {
             Variant::Mod3 => &mut self.mod3,
             Variant::AcesUp => &mut self.aces_up,
             Variant::FortyEight => &mut self.forty_eight,
+            Variant::Bakers(v) => &mut self.bakers[v.min(bakers::CUSTOM)],
         }
     }
 

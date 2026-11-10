@@ -16,7 +16,7 @@ use crate::cards::{self, Card};
 use crate::freecell::{self, Build, EmptyFill};
 use crate::spider::{self, ROWS};
 use crate::storage::{self, SavedState, Settings, Stats};
-use crate::{aces, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
+use crate::{aces, bakers, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
 
 const APP_NAME: &str = "Packarch Spider";
 /// Écart horizontal entre colonnes du Spider, en largeurs de carte (comme KPatience).
@@ -310,6 +310,7 @@ impl Layout {
             AnyGame::Mod3(g) => Layout::mod3(rect, ratio, g),
             AnyGame::AcesUp(g) => Layout::aces(rect, ratio, g),
             AnyGame::FortyEight(g) => Layout::fortyeight(rect, ratio, g),
+            AnyGame::Bakers(g) => Layout::bakers(rect, ratio, g),
         }
     }
 
@@ -465,6 +466,52 @@ impl Layout {
             .collect();
         // KPatience distribue depuis le bas de l'écran.
         let deal_origin = Pos2::new(piles[0].origin.x, rect.bottom());
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `BakersDozen::initialize` : les 4 fondations en haut
+    /// (une place sur deux), les 13 colonnes en dessous. Positions en
+    /// largeurs (x) et hauteurs (y) de carte.
+    fn bakers(rect: Rect, ratio: f32, game: &bakers::Game) -> Layout {
+        const DIST_X: f32 = 1.11;
+        const STORES_Y: f32 = 1.2;
+        const BOTTOM_PADDING: f32 = 2.0;
+        let mut units = [(0.0, 0.0); bakers::PILES];
+        for (i, u) in units.iter_mut().enumerate().take(bakers::STORES) {
+            *u = (DIST_X * i as f32, STORES_Y);
+        }
+        for i in 0..4 {
+            units[bakers::FOUNDATION + i] = ((i * 2 + 3) as f32 * DIST_X, 0.0);
+        }
+        let width_units = 12.0 * DIST_X + 1.0;
+        let height_units = STORES_Y + 1.0 + BOTTOM_PADDING;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0;
+        let y0 = rect.top() + LAYOUT_MARGIN * h;
+        let bottom = rect.bottom() - LAYOUT_MARGIN * h;
+        let piles: Vec<PileGeom> = units
+            .iter()
+            .enumerate()
+            .map(|(i, &(ux, uy))| {
+                let origin = Pos2::new(x0 + ux * w, y0 + uy * h);
+                if i < bakers::STORES {
+                    let avail = (bottom - origin.y - h).max(h * 0.5);
+                    PileGeom {
+                        origin,
+                        fan: Fan::Down,
+                        gaps: fan_gaps(&game.piles[i], h, avail),
+                        zone: Rect::from_min_max(origin, Pos2::new(origin.x + w, rect.bottom().max(origin.y + h))),
+                    }
+                } else {
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+            })
+            .collect();
+        // KPatience distribue depuis une hauteur de carte au-dessus.
+        let deal_origin = Pos2::new(x0, y0 - h);
         Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
     }
 
@@ -967,6 +1014,7 @@ enum Action {
     SetSuits(u8),
     SetFaceUp(bool),
     SetFreeCell(freecell::Options),
+    SetBakers(bakers::Options),
     SetKlondikeDraw(u8),
 }
 
@@ -1045,6 +1093,7 @@ fn new_game(settings: &Settings, deal: u32) -> AnyGame {
         GameKind::Mod3 => AnyGame::Mod3(mod3::Game::new(deal)),
         GameKind::AcesUp => AnyGame::AcesUp(aces::Game::new(deal)),
         GameKind::FortyEight => AnyGame::FortyEight(fortyeight::Game::new(deal)),
+        GameKind::Bakers => AnyGame::Bakers(bakers::Game::new(settings.bakers, deal)),
     }
 }
 
@@ -1073,6 +1122,12 @@ fn apply_variant(settings: &mut Settings, variant: Variant) {
         Variant::Mod3 => settings.game = GameKind::Mod3,
         Variant::AcesUp => settings.game = GameKind::AcesUp,
         Variant::FortyEight => settings.game = GameKind::FortyEight,
+        Variant::Bakers(v) => {
+            settings.game = GameKind::Bakers;
+            if let Some((_, o)) = bakers::PRESETS.get(v) {
+                settings.bakers = *o;
+            }
+        }
     }
 }
 
@@ -1183,6 +1238,10 @@ impl SpiderApp {
             }
             Action::SetFreeCell(o) => {
                 self.settings.freecell = o.sanitized();
+                deal
+            }
+            Action::SetBakers(o) => {
+                self.settings.bakers = o;
                 deal
             }
             Action::SetKlondikeDraw(d) => {
@@ -1570,7 +1629,7 @@ impl SpiderApp {
                             self.deal();
                         }
                     }
-                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon => {}
+                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers => {}
                     GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                         if ui.add_enabled(self.game.can_deal(), egui::Button::new("Piocher").shortcut_text("Tab")).clicked() {
                             self.deal();
@@ -1598,6 +1657,10 @@ impl SpiderApp {
                         AnyGame::FreeCell(g) => {
                             let options = g.options;
                             self.freecell_options(ui, options);
+                        }
+                        AnyGame::Bakers(g) => {
+                            let options = g.bakers;
+                            self.bakers_options(ui, options);
                         }
                         AnyGame::Klondike(g) => {
                             let draw = g.draw;
@@ -1693,6 +1756,7 @@ impl SpiderApp {
                     GameKind::Mod3 => "Règles de Mod3",
                     GameKind::AcesUp => "Règles des As",
                     GameKind::FortyEight => "Règles de Quarante & Huit",
+                    GameKind::Bakers => "Règles de Treize à la douzaine",
                 };
                 if ui.add(egui::Button::new(rules).shortcut_text("F1")).clicked() {
                     self.dialog = Dialog::Rules;
@@ -1785,6 +1849,49 @@ impl SpiderApp {
         }
     }
 
+    fn bakers_options(&mut self, ui: &mut egui::Ui, current: bakers::Options) {
+        let mut chosen: Option<bakers::Options> = None;
+        ui.menu_button("Variante", |ui| {
+            let variant = current.variant();
+            for (i, (name, o)) in bakers::PRESETS.iter().enumerate() {
+                if ui.radio(variant == i, *name).clicked() {
+                    chosen = Some(*o);
+                }
+            }
+            ui.add_enabled(false, egui::RadioButton::new(variant == bakers::CUSTOM, "Personnalisée"));
+        });
+        ui.menu_button("Colonnes vides", |ui| {
+            for (f, label) in [
+                (EmptyFill::Any, "N'importe quelle carte (facile)"),
+                (EmptyFill::Kings, "Rois seulement (moyen)"),
+                (EmptyFill::None, "Aucune carte (difficile)"),
+            ] {
+                if ui.radio(current.empty_fill == f, label).clicked() {
+                    chosen = Some(bakers::Options { empty_fill: f, ..current });
+                }
+            }
+        });
+        ui.menu_button("Colonnes", |ui| {
+            for (d, label) in [(false, "Face visible (plus facile)"), (true, "Face cachée (plus difficile)")] {
+                if ui.radio(current.face_down == d, label).clicked() {
+                    chosen = Some(bakers::Options { face_down: d, ..current });
+                }
+            }
+        });
+        ui.menu_button("Suites", |ui| {
+            for (b, label) in
+                [(Build::AlternateColor, "Couleurs alternées (rouge, noir)"), (Build::Suit, "Même couleur"), (Build::Rank, "Rang seul")]
+            {
+                if ui.radio(current.build == b, label).clicked() {
+                    chosen = Some(bakers::Options { build: b, ..current });
+                }
+            }
+        });
+        if let Some(o) = chosen.filter(|o| *o != current) {
+            self.request(Action::SetBakers(o));
+        }
+    }
+
     /// Barre d'outils, comme celle de KPatience.
     fn toolbar(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
@@ -1824,7 +1931,7 @@ impl SpiderApp {
                         self.deal();
                     }
                 }
-                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon => {}
+                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers => {}
                 GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                     if tool_button(ui, text, Icon::Draw, "Piocher", "Piocher (Tab)", g && self.game.can_deal(), false).clicked() {
                         self.deal();
@@ -1980,7 +2087,7 @@ impl SpiderApp {
                     .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
                     .show(ctx, |ui| {
                         ui.heading(format!("{APP_NAME} {}", env!("CARGO_PKG_VERSION")));
-                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As et Quarante & Huit.");
+                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit\net Treize à la douzaine.");
                         ui.add_space(6.0);
                         ui.label("Portage en Rust de jeux de KPatience, le jeu de patience du projet KDE.");
                         ui.hyperlink_to("KPatience", "https://apps.kde.org/kpat");
@@ -2010,6 +2117,7 @@ impl SpiderApp {
                     GameKind::Mod3 => ("Règles de Mod3", RULES_MOD3),
                     GameKind::AcesUp => ("Règles des As", RULES_ACES_UP),
                     GameKind::FortyEight => ("Règles de Quarante & Huit", RULES_FORTY_EIGHT),
+                    GameKind::Bakers => ("Règles de Treize à la douzaine", RULES_BAKERS),
                 };
                 egui::Window::new(title)
                     .collapsible(false)
@@ -2386,7 +2494,7 @@ fn variant_combo(ui: &mut egui::Ui, id: &str, variant: &mut Variant) {
 
 /// Les jeux de l'écran de choix, dans l'ordre alphabétique (comme
 /// KPatience), avec leur aperçu (`previews/` de KPatience).
-const GAMES: [(GameKind, &str, &[u8]); 11] = [
+const GAMES: [(GameKind, &str, &[u8]); 12] = [
     (GameKind::FreeCell, "FreeCell", include_bytes!("../data/previews/freecell.png")),
     (GameKind::Golf, "Golf", include_bytes!("../data/previews/golf.png")),
     (GameKind::Grandfather, "Grand-père", include_bytes!("../data/previews/grandf.png")),
@@ -2397,6 +2505,7 @@ const GAMES: [(GameKind, &str, &[u8]); 11] = [
     (GameKind::FortyEight, "Quarante & Huit", include_bytes!("../data/previews/fortyeight.png")),
     (GameKind::Simon, "Simon le simple", include_bytes!("../data/previews/simon.png")),
     (GameKind::Spider, "Spider", include_bytes!("../data/previews/spider.png")),
+    (GameKind::Bakers, "Treize à la douzaine", include_bytes!("../data/previews/bakers.png")),
     (GameKind::Yukon, "Yukon", include_bytes!("../data/previews/yukon.png")),
 ];
 /// Constantes de `GameSelectionScene`.
@@ -3000,6 +3109,28 @@ carte.
 du dessus se joue. Talon vide, le rebut se retourne en talon, une seule fois.
 • Les cartes qui peuvent aller sur une fondation y vont toutes seules (dépôt automatique).
 • Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups utiles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_BAKERS: &str = "\
+But : monter les 52 cartes sur les 4 fondations, de l'As au Roi dans la même couleur.
+
+• 13 colonnes de 4 cartes ; dans chaque colonne, les Rois descendent au fond. Pas de cellule.
+• Selon la variante (menu Configuration) : les suites descendent au rang seul, dans la même \
+couleur ou en alternant rouge et noir ; une colonne vide reçoit n'importe quelle carte, un \
+Roi seulement, ou rien ; dans « Châteaux en Espagne », les cartes sont posées face cachée, \
+sauf celle du dessus.
+• Une suite se déplace d'un bloc : 1 carte sans colonne vide, 2 avec une, 4 avec deux… \
+(seulement si les colonnes vides reçoivent n'importe quelle carte).
+• Les cartes qui ne servent plus sur les colonnes vont toutes seules sur les fondations \
+(dépôt automatique).
+• Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
+
+Variantes : Treize à la douzaine (rang seul, colonnes vides inutilisables), Patience \
+espagnole (rang seul, colonnes vides libres), Châteaux en Espagne (couleurs alternées, cartes \
+cachées), Solitaire portugais (rang seul, Rois seulement sur les colonnes vides).
 
 Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
 gagnant ; sinon, les coups utiles.

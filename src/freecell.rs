@@ -108,11 +108,21 @@ pub fn variant_name(variant: usize) -> &'static str {
 pub trait Code: Copy {
     /// Rang (1 à 13) dans les 4 bits du bas, couleur (0 à 3) au-dessus.
     fn code(self) -> u8;
+    /// Carte face cachée (Treize à la douzaine, Château) : elle ne fait
+    /// partie d'aucune suite.
+    fn hidden(self) -> bool;
 }
+
+/// Dans les codes de l'outil de résolution : carte face cachée (ignoré par
+/// `rank` et `suit`).
+pub const HIDDEN: u8 = 0x40;
 
 impl Code for u8 {
     fn code(self) -> u8 {
         self
+    }
+    fn hidden(self) -> bool {
+        self & HIDDEN != 0
     }
 }
 
@@ -120,11 +130,17 @@ impl Code for Card {
     fn code(self) -> u8 {
         self.rank | ((self.suit as u8) << 4)
     }
+    fn hidden(self) -> bool {
+        !self.face_up
+    }
 }
 
 impl Code for &Card {
     fn code(self) -> u8 {
         (*self).code()
+    }
+    fn hidden(self) -> bool {
+        (*self).hidden()
     }
 }
 
@@ -191,9 +207,11 @@ impl Rules {
         }
     }
 
-    /// `card` peut-elle être posée sur `below` dans une colonne ?
+    /// `card` peut-elle être posée sur `below` dans une colonne ? (Jamais
+    /// sur ou sous une carte cachée.)
     pub fn builds_on(&self, card: u8, below: u8) -> bool {
-        rank(card) + 1 == rank(below)
+        (card | below) & HIDDEN == 0
+            && rank(card) + 1 == rank(below)
             && match self.opts.build {
                 Build::AlternateColor => is_red(card) != is_red(below),
                 Build::Suit => suit(card) == suit(below),
@@ -230,7 +248,7 @@ impl Rules {
             return false;
         }
         match self.kind(p) {
-            PileKind::Tableau => self.is_sequence(&pile[index..]),
+            PileKind::Tableau => pile[index..].iter().all(|c| !c.hidden()) && self.is_sequence(&pile[index..]),
             PileKind::Cell => index + 1 == pile.len(),
             PileKind::Foundation => false,
         }

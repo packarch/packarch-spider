@@ -24,6 +24,7 @@ de la version C++ (jusqu'à `v1.0.1`).
 | Grand-père | `grandf.rs` | `grandf_solver.rs`, portage de `GrandfSolver` sur `patsolve.rs` (redistribution = coup, historique haché dans la clé comme KPat) | 997/1000 gagnées, 2 perdues, 1 indéterminée ; 5 s pour les 1000 ; **identique à KPat sur les 1000** |
 | Les as (Aces Up) | `aces.rs` | `aces_solver.rs`, **maison** (`IdiotSolver` de KPat est faux : sa distribution ne pose pas les cartes, et écarter d'office n'est pas sûr, donne 34). Deux passes : tout écarter d'office (rapide, solutions justes), puis recherche exhaustive où seul l'écart d'une carte inutile est forcé (plus basses de sa couleur écartées, ou talon vide) ; vérifié contre une recherche sans écart forcé (`forced_discard_is_safe`, 45 donnes tranchées sur 100, 95 s) | 508/1000 gagnées, 108 perdues (prouvé), 384 indéterminées (limite 5 millions) ; 254 s pour les 1000, 1,1 s au pire, 213 Mo au pic. Piste : un meilleur critère d'écart sans risque réduirait les indéterminées |
 | Quarante & Huit (Forty & Eight) | `fortyeight.rs` | `fortyeight_solver.rs`, portage de `FortyeightSolver` sur `patsolve.rs` (`Piles<10, 104>`), **corrigé** : sorties (l'original ne sort jamais le second As d'une couleur), rebut retourné en un coup distinct de la pioche | 929/1000 gagnées, 0 perdue, 71 indéterminées (limite 1 million) ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic |
+| Treize à la douzaine (Baker's Dozen) + 3 variantes et personnalisée | `bakers.rs` | celui du FreeCell (`freecell_solver::solve_piles`, 13 colonnes, 0 cellule ; KPat : Freecell Solver), qui garde maintenant des cartes cachées (`Code::hidden`, `HIDDEN`) | donnes 1 à 100 : 95/1/4, Patience espagnole 100/0/0, Châteaux en Espagne 97/3/0, Solitaire portugais 94/1/5 ; 1 s au pire |
 | Mod3 | `mod3.rs` | `mod3_solver.rs`, portage de `Mod3Solver` sur `patsolve.rs` (`Piles<34, 104>`) | 747/1000 gagnées, 19 perdues, 234 indéterminées ; ≈ 0,5 s/donne, 2,6 s au pire, **245 Mo au pic** ; KPat 541/18/441, jamais contredit |
 
 Aussi fait :
@@ -33,6 +34,26 @@ Aussi fait :
 - dépôt automatique (FreeCell, Klondike, Simon, Golf, Yukon, Grand-père, Mod3, Quarante & Huit), bouton Déposer (P), Piocher
   (Tab, Klondike, Golf et Quarante & Huit), Redistribuer (R, Grand-père), Distribuer (Entrée, Spider, Mod3 et les As) ;
 - noms complets dans le titre et les statistiques (« FreeCell (Baker's Game) »…).
+
+## Chantier en cours (à lire en premier après une coupure)
+
+Demande du 10 novembre 2026 : porter tous les jeux de KPatience qui manquent. Ordre et état
+(mis à jour à chaque étape ; un jeu n'est « fait » que testé, documenté et commité) :
+
+1. Treize à la douzaine (Baker's Dozen et variantes : `bakersdozen.cpp`,
+   `patsolve/bakersdozensolver.cpp`) — **fait** (commit « Treize à la douzaine »)
+2. Château (Castle et variantes : `castle.cpp`, `patsolve/castlesolver.cpp`) — à faire
+3. Normandie (Normandy : `normandy.cpp`, `patsolve/normandysolver.cpp`) — à faire
+4. Bizilizi (et variantes : `bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) — à faire
+
+Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --apps
+packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
+(`gh run list -R packarch/myrepo`), installer.
+
+Étape en cours : Château. Les cartes cachées dans les règles et le solveur du FreeCell
+(`Code::hidden`, `HIDDEN`, `freecell_solver::solve_piles`) sont prêtes pour lui (KPatience le
+confie aussi à Freecell Solver) ; reste : réserves (cellules), As posés d'avance, colonnes
+alternées face cachée, disposition en deux ailes.
 
 ## Architecture : où brancher un nouveau jeu
 
@@ -59,13 +80,13 @@ Aussi fait :
      (élagage, heuristique) plutôt qu'une limite plus haute ;
    - Mod3 : 245 Mo au pic avec 1 million de positions (état de 138 octets, talon compris) ;
      compacter le talon (son ordre est fixe : un compteur suffit) le réduirait nettement.
-2. Autres jeux de KPatience pas encore portés : Normandie, Château (Castle), Treize à la
+2. Autres jeux de KPatience pas encore portés (voir « Chantier en cours ») : Normandie, Château (Castle), Treize à la
    douzaine (Baker's Dozen), Bizilizi.
 
 ## Comment vérifier
 
 ```sh
-cargo build --release && cargo test --release          # 75 tests
+cargo build --release && cargo test --release          # 79 tests
 ./target/release/packarch-spider --solve 2 1 30       # Spider
 ./target/release/packarch-spider --solve-freecell 3 1 100
 ./target/release/packarch-spider --solve-klondike 1 1 100

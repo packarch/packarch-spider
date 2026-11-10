@@ -1,7 +1,7 @@
 # packarch-spider
 
 Le **Spider**, le **FreeCell**, le **Klondike**, **l'horloge du grand-père**, **Simon le simple**, le
-**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As** et **Quarante & Huit** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
+**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit** et **Treize à la douzaine** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
 pour [Packarch](https://github.com/packarch/CachyOS-Packarch).
 
 C'est un portage de jeux de [KPatience](https://apps.kde.org/kpat/) (KDE), dont il reprend
@@ -174,6 +174,19 @@ flèches et Entrée) ; **Nouvelle donne** (Ctrl+N) redistribue le même jeu.
   le même coup. Sur les donnes 1 à 1000 : 929 gagnées, 0 perdue, 71 indéterminées (limite
   d'un million de positions ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic).
 
+## Treize à la douzaine
+
+- Les règles de KPatience (Baker's Dozen) et ses variantes (menu Configuration) : Treize à
+  la douzaine, Patience espagnole, Châteaux en Espagne, Solitaire portugais, personnalisée ;
+  13 colonnes de 4 cartes, Rois au fond, pas de cellule ; suites au rang seul, dans la même
+  couleur ou en couleurs alternées ; colonnes vides libres, aux Rois ou inutilisables ;
+  cartes cachées (Châteaux en Espagne) ; dépôt automatique sans risque ;
+- **outil de résolution** : KPatience utilise Freecell Solver ; c'est ici celui du FreeCell
+  (13 colonnes, 0 cellule), qui sait maintenant garder des cartes cachées (il les connaît,
+  comme Freecell Solver). Sur les donnes 1 à 100 : Treize à la douzaine 95 gagnées, 1 perdue,
+  4 indéterminées ; Patience espagnole 100 / 0 / 0 ; Châteaux en Espagne 97 / 3 / 0 ;
+  Solitaire portugais 94 / 1 / 5 (1 s au pire).
+
 ## Compilation
 
 ```sh
@@ -201,6 +214,8 @@ cargo build --release
 ./target/release/packarch-spider --solve-aces-up 1 100 # idem aux As
 ./target/release/packarch-spider --deal 42 --forty-eight # Quarante & Huit, donne n° 42
 ./target/release/packarch-spider --solve-forty-eight 1 100 # idem à Quarante & Huit
+./target/release/packarch-spider --deal 42 --bakers 0 # Treize à la douzaine, donne n° 42 (variante 0 à 3)
+./target/release/packarch-spider --solve-bakers 0 1 100 # idem à Treize à la douzaine
 cargo test --release
 ```
 
@@ -234,7 +249,7 @@ done
 - `src/spider.rs` : règles du Spider, coups, annulation ;
 - `src/spider_solver.rs` : outil de résolution du Spider, portage de `spidersolver2` de KPatience ;
 - `src/freecell.rs` : règles du FreeCell et de ses variantes, dépôt automatique ;
-- `src/freecell_solver.rs` : outil de résolution du FreeCell ;
+- `src/freecell_solver.rs` : outil de résolution du FreeCell (aussi pour Treize à la douzaine) ;
 - `src/klondike.rs` : règles du Klondike ;
 - `src/patsolve.rs` : le moteur de recherche `patsolve` de KPatience, commun au Klondike, à l'horloge, au
   Yukon, à Grand-père, à Mod3 et à Quarante & Huit, et le stockage compact de leurs piles (`Piles`) ;
@@ -255,6 +270,7 @@ done
 - `src/aces_solver.rs` : son outil de résolution ;
 - `src/fortyeight.rs` : règles de Quarante & Huit ;
 - `src/fortyeight_solver.rs` : son outil de résolution, portage corrigé de `FortyeightSolver` ;
+- `src/bakers.rs` : règles et variantes de Treize à la douzaine ;
 - `src/assets.rs` : jeux de cartes et thèmes SVG (rendus avec resvg) ;
 - `src/storage.rs` : réglages, statistiques, partie en cours ;
 - `src/app.rs` : interface.
@@ -263,5 +279,5 @@ done
 
 GPL-2.0-or-later (`COPYING`). D'après KPatience : © 1995 Paul Olav Tvete, © 2000 Stephan Kulow,
 Josh Metzler (Spider), Stephan Kulow (outil de résolution du Spider), Rodolfo Borges, Stephan
-Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
+Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
 libkdegames et KPatience (licences dans `data/carddecks/*`).

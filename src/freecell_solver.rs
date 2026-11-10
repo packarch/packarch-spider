@@ -17,7 +17,7 @@ use std::hash::{BuildHasherDefault, Hasher};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use crate::board::{Move, Outcome};
-use crate::freecell::{Code, EmptyFill, Game, PileKind, Rules, rank, suit};
+use crate::freecell::{Code, EmptyFill, Game, HIDDEN, PileKind, Rules, rank, suit};
 
 /// Au-delà, la recherche abandonne (« impossible de déterminer »).
 const MAX_POSITIONS: usize = 400_000;
@@ -170,6 +170,10 @@ impl<'a> Search<'a> {
 
     fn apply(&self, piles: &mut [Vec<u8>], from: usize, index: usize, to: usize) {
         let moving = piles[from].split_off(index);
+        // La carte découverte se retourne (Treize à la douzaine, Château).
+        if let Some(top) = piles[from].last_mut() {
+            *top &= !HIDDEN;
+        }
         if self.rules.kind(to) == PileKind::Foundation {
             piles[to].clear();
             piles[to].push(*moving.last().expect("une carte"));
@@ -315,6 +319,13 @@ pub fn solve(game: &Game, stop: &AtomicBool) -> Outcome {
             }
         })
         .collect();
+    solve_piles(rules, piles, stop)
+}
+
+/// Cherche une suite de coups gagnante pour des piles déjà codées (fondations
+/// réduites à leur carte du dessus, cartes cachées marquées `HIDDEN`), selon
+/// `rules` : Treize à la douzaine et Château s'en servent aussi.
+pub fn solve_piles(rules: Rules, piles: Vec<Vec<u8>>, stop: &AtomicBool) -> Outcome {
     debug_assert!(piles.iter().flatten().all(|&c| (1..=13).contains(&rank(c)) && suit(c) < 4));
     let mut search = Search { rules, nodes: Vec::new(), seen: Seen::default(), heap: BinaryHeap::new(), counter: 0, stop };
     search.run(piles)
