@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::cards::Card;
 use crate::freecell::{self, Code};
-use crate::{aces, aces_solver, bakers, castle, clock, fortyeight, fortyeight_solver, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
+use crate::{aces, aces_solver, bakers, castle, clock, normandy, normandy_solver, fortyeight, fortyeight_solver, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
 
 /// Un coup du joueur (ou du solveur).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -47,6 +47,7 @@ pub enum GameKind {
     FortyEight,
     Bakers,
     Castle,
+    Normandy,
 }
 
 /// Une variante, pour les statistiques et les donnes numérotées : le Spider
@@ -69,10 +70,11 @@ pub enum Variant {
     Bakers(usize),
     /// Château : variante 0 à 5, ou personnalisée.
     Castle(usize),
+    Normandy,
 }
 
 impl Variant {
-    pub const ALL: [Variant; 32] = [
+    pub const ALL: [Variant; 33] = [
         Variant::Klondike(1),
         Variant::Klondike(3),
         Variant::Spider(1),
@@ -105,6 +107,7 @@ impl Variant {
         Variant::Castle(4),
         Variant::Castle(5),
         Variant::Castle(castle::CUSTOM),
+        Variant::Normandy,
     ];
 
     pub fn name(self) -> String {
@@ -123,6 +126,7 @@ impl Variant {
             Variant::FortyEight => "Quarante & Huit".into(),
             Variant::Bakers(v) => bakers::variant_name(v).into(),
             Variant::Castle(v) => castle::variant_name(v).into(),
+            Variant::Normandy => "Normandie".into(),
         }
     }
 }
@@ -157,6 +161,7 @@ pub enum AnyGame {
     FortyEight(fortyeight::Game),
     Bakers(bakers::Game),
     Castle(castle::Game),
+    Normandy(normandy::Game),
 }
 
 impl AnyGame {
@@ -175,6 +180,7 @@ impl AnyGame {
             AnyGame::FortyEight(_) => GameKind::FortyEight,
             AnyGame::Bakers(_) => GameKind::Bakers,
             AnyGame::Castle(_) => GameKind::Castle,
+            AnyGame::Normandy(_) => GameKind::Normandy,
         }
     }
 
@@ -193,6 +199,7 @@ impl AnyGame {
             AnyGame::FortyEight(_) => Variant::FortyEight,
             AnyGame::Bakers(g) => Variant::Bakers(g.bakers.variant()),
             AnyGame::Castle(g) => Variant::Castle(g.castle.variant()),
+            AnyGame::Normandy(_) => Variant::Normandy,
         }
     }
 
@@ -200,7 +207,7 @@ impl AnyGame {
         match self {
             AnyGame::Spider(g) => format!("Spider ({} couleur{})", g.suit_count, if g.suit_count > 1 { "s" } else { "" }),
             AnyGame::FreeCell(g) => g.options.name().into(),
-            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::AcesUp(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) => self.variant().name(),
+            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::AcesUp(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_) => self.variant().name(),
         }
     }
 
@@ -220,6 +227,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => AnyGame::FortyEight(fortyeight::Game::new(g.deal_number)),
             AnyGame::Bakers(g) => AnyGame::Bakers(bakers::Game::new(g.bakers, g.deal_number)),
             AnyGame::Castle(g) => AnyGame::Castle(castle::Game::new(g.castle, g.deal_number)),
+            AnyGame::Normandy(g) => AnyGame::Normandy(normandy::Game::new(g.deal_number)),
         }
     }
 
@@ -238,6 +246,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.deal_number,
             AnyGame::Bakers(g) => g.deal_number,
             AnyGame::Castle(g) => g.deal_number,
+            AnyGame::Normandy(g) => g.deal_number,
         }
     }
 
@@ -256,6 +265,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.moves,
             AnyGame::Bakers(g) => g.moves,
             AnyGame::Castle(g) => g.moves,
+            AnyGame::Normandy(g) => g.moves,
         }
     }
 
@@ -274,6 +284,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.is_won(),
             AnyGame::Bakers(g) => g.is_won(),
             AnyGame::Castle(g) => g.is_won(),
+            AnyGame::Normandy(g) => g.is_won(),
         }
     }
 
@@ -292,6 +303,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.can_undo(),
             AnyGame::Bakers(g) => g.can_undo(),
             AnyGame::Castle(g) => g.can_undo(),
+            AnyGame::Normandy(g) => g.can_undo(),
         }
     }
 
@@ -310,6 +322,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.can_redo(),
             AnyGame::Bakers(g) => g.can_redo(),
             AnyGame::Castle(g) => g.can_redo(),
+            AnyGame::Normandy(g) => g.can_redo(),
         }
     }
 
@@ -328,6 +341,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.undo(),
             AnyGame::Bakers(g) => g.undo(),
             AnyGame::Castle(g) => g.undo(),
+            AnyGame::Normandy(g) => g.undo(),
         }
     }
 
@@ -346,6 +360,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.redo(),
             AnyGame::Bakers(g) => g.redo(),
             AnyGame::Castle(g) => g.redo(),
+            AnyGame::Normandy(g) => g.redo(),
         }
     }
 
@@ -364,6 +379,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.play(m),
             AnyGame::Bakers(g) => g.play(m),
             AnyGame::Castle(g) => g.play(m),
+            AnyGame::Normandy(g) => g.play(m),
         }
     }
 
@@ -381,6 +397,7 @@ impl AnyGame {
             AnyGame::Mod3(g) => g.can_deal(),
             AnyGame::AcesUp(g) => g.can_deal(),
             AnyGame::FortyEight(g) => g.can_deal(),
+            AnyGame::Normandy(g) => g.can_deal(),
         }
     }
 
@@ -393,6 +410,7 @@ impl AnyGame {
             AnyGame::Mod3(_) => Some(mod3::TALON),
             AnyGame::AcesUp(_) => Some(aces::TALON),
             AnyGame::FortyEight(_) => Some(fortyeight::TALON),
+            AnyGame::Normandy(_) => Some(normandy::TALON),
             _ => None,
         }
     }
@@ -415,6 +433,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.piles.len(),
             AnyGame::Bakers(g) => g.piles.len(),
             AnyGame::Castle(g) => g.piles.len(),
+            AnyGame::Normandy(g) => g.piles.len(),
         }
     }
 
@@ -433,6 +452,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => &g.piles[p],
             AnyGame::Bakers(g) => &g.piles[p],
             AnyGame::Castle(g) => &g.piles[p],
+            AnyGame::Normandy(g) => &g.piles[p],
         }
     }
 
@@ -471,6 +491,11 @@ impl AnyGame {
                 aces::AWAY => PileKind::Foundation,
                 _ => PileKind::Stock,
             },
+            AnyGame::Normandy(_) => match p {
+                0..normandy::STORES => PileKind::Tableau,
+                normandy::TALON => PileKind::Stock,
+                _ => PileKind::Foundation,
+            },
             AnyGame::Bakers(_) if p < bakers::STORES => PileKind::Tableau,
             AnyGame::Bakers(_) => PileKind::Foundation,
             AnyGame::Castle(g) => match g.rules().kind(p) {
@@ -502,6 +527,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.can_pick(p, index),
             AnyGame::Bakers(g) => g.can_pick(p, index),
             AnyGame::Castle(g) => g.can_pick(p, index),
+            AnyGame::Normandy(g) => g.can_pick(p, index),
         }
     }
 
@@ -521,6 +547,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.is_legal(m),
             AnyGame::Bakers(g) => g.is_legal(m),
             AnyGame::Castle(g) => g.is_legal(m),
+            AnyGame::Normandy(g) => g.is_legal(m),
         }
     }
 
@@ -540,6 +567,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.auto_move(p, index),
             AnyGame::Bakers(g) => g.auto_move(p, index),
             AnyGame::Castle(g) => g.auto_move(p, index),
+            AnyGame::Normandy(g) => g.auto_move(p, index),
         }
     }
 
@@ -558,6 +586,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => fortyeight_solver::useful_moves(g),
             AnyGame::Bakers(g) => g.sensible_moves(),
             AnyGame::Castle(g) => g.sensible_moves(),
+            AnyGame::Normandy(g) => normandy_solver::useful_moves(g),
         }
     }
 
@@ -579,6 +608,7 @@ impl AnyGame {
             AnyGame::FortyEight(g) => g.autodrop(),
             AnyGame::Bakers(g) => g.autodrop(),
             AnyGame::Castle(g) => g.autodrop(),
+            AnyGame::Normandy(g) => g.autodrop(),
         }
     }
 
@@ -589,7 +619,7 @@ impl AnyGame {
     }
 
     pub fn uses_autodrop(&self) -> bool {
-        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_))
+        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_))
     }
 
     /// Clé de la position, pour garder les résultats du solveur.
@@ -657,6 +687,13 @@ impl AnyGame {
                 key.push(6);
                 for p in &g.piles {
                     key.extend(p.iter().map(|c| c.code()));
+                    key.push(255);
+                }
+            }
+            AnyGame::Normandy(g) => {
+                key.push(14);
+                for p in &g.piles {
+                    key.extend(p.iter().map(|c| c.code() | if c.face_up { 64 } else { 0 }));
                     key.push(255);
                 }
             }
@@ -728,6 +765,7 @@ pub fn solve(game: &AnyGame, stop: &AtomicBool) -> Outcome {
         AnyGame::FortyEight(g) => fortyeight_solver::solve(g, stop),
         AnyGame::Bakers(g) => bakers::solve(g, stop),
         AnyGame::Castle(g) => castle::solve(g, stop),
+        AnyGame::Normandy(g) => normandy_solver::solve(g, stop),
     }
 }
 
@@ -753,6 +791,7 @@ mod tests {
             AnyGame::FortyEight(fortyeight::Game::new(3)),
             AnyGame::Bakers(bakers::Game::new(bakers::PRESETS[2].1, 3)),
             AnyGame::Castle(castle::Game::new(castle::PRESETS[4].1, 3)),
+            AnyGame::Normandy(normandy::Game::new(3)),
         ];
         for g in games {
             let json = serde_json::to_string(&g).unwrap();

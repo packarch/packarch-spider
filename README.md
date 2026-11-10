@@ -1,7 +1,7 @@
 # packarch-spider
 
 Le **Spider**, le **FreeCell**, le **Klondike**, **l'horloge du grand-père**, **Simon le simple**, le
-**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit**, **Treize à la douzaine** et **Château** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
+**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit**, **Treize à la douzaine**, **Château** et **Normandie** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
 pour [Packarch](https://github.com/packarch/CachyOS-Packarch).
 
 C'est un portage de jeux de [KPatience](https://apps.kde.org/kpat/) (KDE), dont il reprend
@@ -200,6 +200,18 @@ flèches et Entrée) ; **Nouvelle donne** (Ctrl+N) redistribue le même jeu.
   1 indéterminée ; Citadelle 87 / 13 / 0 ; Rois exilés 77 / 15 / 8 ; Rues et allées
   47 / 45 / 8 ; Engin de siège 97 / 2 / 1 ; Forteresse 95 / 5 / 0 (0,6 s au pire).
 
+## Normandie
+
+- Les règles de KPatience (Normandy) : 104 cartes (2 jeux), 8 colonnes (une carte cachée,
+  deux visibles), 8 fondations ; on descend en alternant rouge et noir, toute suite se
+  déplace d'un bloc ; une carte peut redescendre d'une fondation ; **Distribuer** (Entrée, ou
+  un clic sur le talon) pose une rangée de 8 cartes ; dépôt automatique sans risque ;
+- **outil de résolution** : portage de `NormandySolver` de KPatience sur le moteur
+  `patsolve` (mêmes priorités) ; une position où une carte vient de sortir est explorée tout
+  de suite (KPatience ne le fait pas pour ce jeu : 81 donnes gagnées sur 100 au lieu de 73).
+  Sur les donnes 1 à 1000 : 868 gagnées, 0 perdue, 132 indéterminées (limite d'un million de
+  positions ; 85 s pour les 1000, 1,5 s au pire, 207 Mo au pic).
+
 ## Compilation
 
 ```sh
@@ -231,6 +243,8 @@ cargo build --release
 ./target/release/packarch-spider --solve-bakers 0 1 100 # idem à Treize à la douzaine
 ./target/release/packarch-spider --deal 42 --castle 0 # Château, donne n° 42 (variante 0 à 5)
 ./target/release/packarch-spider --solve-castle 0 1 100 # idem à Château
+./target/release/packarch-spider --deal 42 --normandy # Normandie, donne n° 42
+./target/release/packarch-spider --solve-normandy 1 100 # idem à Normandie
 cargo test --release
 ```
 
@@ -267,7 +281,7 @@ done
 - `src/freecell_solver.rs` : outil de résolution du FreeCell (aussi pour Treize à la douzaine et Château) ;
 - `src/klondike.rs` : règles du Klondike ;
 - `src/patsolve.rs` : le moteur de recherche `patsolve` de KPatience, commun au Klondike, à l'horloge, au
-  Yukon, à Grand-père, à Mod3 et à Quarante & Huit, et le stockage compact de leurs piles (`Piles`) ;
+  Yukon, à Grand-père, à Mod3, à Quarante & Huit et à Normandie, et le stockage compact de leurs piles (`Piles`) ;
 - `src/klondike_solver.rs` : outil de résolution du Klondike, portage de `KlondikeSolver` ;
 - `src/clock.rs` : règles de l'horloge du grand-père ;
 - `src/clock_solver.rs` : son outil de résolution, portage de `ClockSolver` ;
@@ -287,6 +301,8 @@ done
 - `src/fortyeight_solver.rs` : son outil de résolution, portage corrigé de `FortyeightSolver` ;
 - `src/bakers.rs` : règles et variantes de Treize à la douzaine ;
 - `src/castle.rs` : règles et variantes de Château ;
+- `src/normandy.rs` : règles de Normandie ;
+- `src/normandy_solver.rs` : son outil de résolution, portage de `NormandySolver` ;
 - `src/assets.rs` : jeux de cartes et thèmes SVG (rendus avec resvg) ;
 - `src/storage.rs` : réglages, statistiques, partie en cours ;
 - `src/app.rs` : interface.
@@ -295,5 +311,5 @@ done
 
 GPL-2.0-or-later (`COPYING`). D'après KPatience : © 1995 Paul Olav Tvete, © 2000 Stephan Kulow,
 Josh Metzler (Spider), Stephan Kulow (outil de résolution du Spider), Rodolfo Borges, Stephan
-Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine, Château), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
+Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine, Château, Normandie), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
 libkdegames et KPatience (licences dans `data/carddecks/*`).

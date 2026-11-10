@@ -1,6 +1,7 @@
 //! packarch-spider : le Spider, le FreeCell, le Klondike, l'horloge du
 //! grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As,
-//! Quarante & Huit, Treize à la douzaine et Château de KPatience, en Rust (egui).
+//! Quarante & Huit, Treize à la douzaine, Château et Normandie de KPatience,
+//! en Rust (egui).
 //!
 //! Sans argument : la fenêtre du jeu.
 //! `--solve COULEURS DÉBUT FIN` et `--solve-freecell VARIANTE DÉBUT FIN` :
@@ -29,6 +30,8 @@ mod klondike;
 mod klondike_solver;
 mod mod3;
 mod mod3_solver;
+mod normandy;
+mod normandy_solver;
 mod patsolve;
 mod simon;
 mod simon_solver;
@@ -62,6 +65,7 @@ Usage : packarch-spider [OPTION]
   --deal N --mod3                     lance Mod3 sur la donne N
   --deal N --aces-up                  lance les As sur la donne N
   --deal N --forty-eight              lance Quarante & Huit sur la donne N
+  --deal N --normandy                 lance Normandie sur la donne N
   --deal N --bakers VARIANTE          lance Treize à la douzaine sur la donne N (variante 0 à 3 :
                                       Treize à la douzaine, Patience espagnole,
                                       Châteaux en Espagne, Solitaire portugais)
@@ -78,6 +82,7 @@ Usage : packarch-spider [OPTION]
   --solve-mod3 DÉBUT FIN              résout les donnes DÉBUT à FIN de Mod3
   --solve-aces-up DÉBUT FIN           résout les donnes DÉBUT à FIN des As
   --solve-forty-eight DÉBUT FIN       résout les donnes DÉBUT à FIN de Quarante & Huit
+  --solve-normandy DÉBUT FIN          résout les donnes DÉBUT à FIN de Normandie
   --solve-bakers VARIANTE DÉBUT FIN   résout les donnes DÉBUT à FIN de Treize à la douzaine
   --solve-castle VARIANTE DÉBUT FIN   résout les donnes DÉBUT à FIN de Château
   -h, --help                          affiche cette aide
@@ -102,6 +107,7 @@ fn solve_range(variant: Variant, start: u32, end: u32) {
             Variant::FortyEight => board::AnyGame::FortyEight(fortyeight::Game::new(deal)),
             Variant::Bakers(v) => board::AnyGame::Bakers(bakers::Game::new(bakers::PRESETS[v].1, deal)),
             Variant::Castle(v) => board::AnyGame::Castle(castle::Game::new(castle::PRESETS[v].1, deal)),
+            Variant::Normandy => board::AnyGame::Normandy(normandy::Game::new(deal)),
         };
         let t = Instant::now();
         let result = match board::solve(&g, &stop) {
@@ -225,6 +231,17 @@ fn main() -> ExitCode {
         },
         ["--deal", deal, "--yukon"] | ["--yukon", "--deal", deal] => match num(deal) {
             Some(d) if d >= 1 => start = Some((Some(Variant::Yukon), d)),
+            _ => return usage_error(),
+        },
+        ["--solve-normandy", first, last] => match (num(first), num(last)) {
+            (Some(x), Some(y)) if x >= 1 && x <= y => {
+                solve_range(Variant::Normandy, x, y);
+                return ExitCode::SUCCESS;
+            }
+            _ => return usage_error(),
+        },
+        ["--deal", deal, "--normandy"] | ["--normandy", "--deal", deal] => match num(deal) {
+            Some(d) if d >= 1 => start = Some((Some(Variant::Normandy), d)),
             _ => return usage_error(),
         },
         ["--solve-forty-eight", first, last] => match (num(first), num(last)) {

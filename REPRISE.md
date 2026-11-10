@@ -26,6 +26,7 @@ de la version C++ (jusqu'à `v1.0.1`).
 | Quarante & Huit (Forty & Eight) | `fortyeight.rs` | `fortyeight_solver.rs`, portage de `FortyeightSolver` sur `patsolve.rs` (`Piles<10, 104>`), **corrigé** : sorties (l'original ne sort jamais le second As d'une couleur), rebut retourné en un coup distinct de la pioche | 929/1000 gagnées, 0 perdue, 71 indéterminées (limite 1 million) ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic |
 | Treize à la douzaine (Baker's Dozen) + 3 variantes et personnalisée | `bakers.rs` | celui du FreeCell (`freecell_solver::solve_piles`, 13 colonnes, 0 cellule ; KPat : Freecell Solver), qui garde maintenant des cartes cachées (`Code::hidden`, `HIDDEN`) | donnes 1 à 100 : 95/1/4, Patience espagnole 100/0/0, Châteaux en Espagne 97/3/0, Solitaire portugais 94/1/5 ; 1 s au pire |
 | Château (Castle) + 5 variantes et personnalisée | `castle.rs` | celui du FreeCell (`solve_piles`, réserves = cellules ; KPat : Freecell Solver) | donnes 1 à 100 : Château assiégé 71/28/1, Citadelle 87/13/0, Rois exilés 77/15/8, Rues et allées 47/45/8, Engin de siège 97/2/1, Forteresse 95/5/0 ; 0,6 s au pire |
+| Normandie (Normandy) | `normandy.rs` | `normandy_solver.rs`, portage de `NormandySolver` sur `patsolve.rs` (`Piles<9, 104>`, priorités `params`, Raymond à 8 fondations) ; grappe = fondations (KPat : 0) : 81/100 au lieu de 73 | 868/1000 gagnées, 0 perdue, 132 indéterminées (limite 1 million) ; 85 s pour les 1000, 1,5 s au pire, 207 Mo au pic |
 | Mod3 | `mod3.rs` | `mod3_solver.rs`, portage de `Mod3Solver` sur `patsolve.rs` (`Piles<34, 104>`) | 747/1000 gagnées, 19 perdues, 234 indéterminées ; ≈ 0,5 s/donne, 2,6 s au pire, **245 Mo au pic** ; KPat 541/18/441, jamais contredit |
 
 Aussi fait :
@@ -44,14 +45,14 @@ Demande du 10 novembre 2026 : porter tous les jeux de KPatience qui manquent. Or
 1. Treize à la douzaine (Baker's Dozen et variantes : `bakersdozen.cpp`,
    `patsolve/bakersdozensolver.cpp`) — **fait** (commit « Treize à la douzaine »)
 2. Château (Castle et variantes : `castle.cpp`, `patsolve/castlesolver.cpp`) — **fait** (commit « Château »)
-3. Normandie (Normandy : `normandy.cpp`, `patsolve/normandysolver.cpp`) — à faire
+3. Normandie (Normandy : `normandy.cpp`, `patsolve/normandysolver.cpp`) — **fait** (commit « Normandie »)
 4. Bizilizi (et variantes : `bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) — à faire
 
 Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --apps
 packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
 (`gh run list -R packarch/myrepo`), installer.
 
-Étape en cours : Normandie (`normandy.cpp`, `patsolve/normandysolver.cpp`) : lecture des sources.
+Étape en cours : Bizilizi (`bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) : lecture des sources.
 
 ## Architecture : où brancher un nouveau jeu
 
@@ -64,8 +65,8 @@ packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier Git
 - `storage.rs` : réglages et statistiques par variante.
 - `main.rs` : `--deal N --<jeu>` et `--solve-<jeu> DÉBUT FIN` pour tester.
 - `patsolve.rs` : moteur `patsolve` générique (trait `Position`) pour les solveurs de
-  KPatience qui en dérivent (Klondike, Horloge, Yukon, Grand-père, Mod3, Quarante & Huit ; à
-  réutiliser pour Normandie, Château, Bizilizi…), et `Piles<N, C>`, le
+  KPatience qui en dérivent (Klondike, Horloge, Yukon, Grand-père, Mod3, Quarante & Huit,
+  Normandie ; à réutiliser pour Bizilizi), et `Piles<N, C>`, le
   stockage compact (sans allocation) de N piles et C cartes (52 par défaut).
 
 ## Prochaines étapes possibles
@@ -84,7 +85,7 @@ packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier Git
 ## Comment vérifier
 
 ```sh
-cargo build --release && cargo test --release          # 83 tests
+cargo build --release && cargo test --release          # 90 tests
 ./target/release/packarch-spider --solve 2 1 30       # Spider
 ./target/release/packarch-spider --solve-freecell 3 1 100
 ./target/release/packarch-spider --solve-klondike 1 1 100

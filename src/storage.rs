@@ -161,6 +161,8 @@ pub struct Stats {
     pub bakers: [VariantStats; bakers::VARIANTS],
     /// Château, par variante (`castle::PRESETS`, puis personnalisée).
     pub castle: [VariantStats; castle::VARIANTS],
+    /// Normandie.
+    pub normandy: VariantStats,
 }
 
 impl Stats {
@@ -187,6 +189,7 @@ impl Stats {
             Variant::FortyEight => &self.forty_eight,
             Variant::Bakers(v) => &self.bakers[v.min(bakers::CUSTOM)],
             Variant::Castle(v) => &self.castle[v.min(castle::CUSTOM)],
+            Variant::Normandy => &self.normandy,
         }
     }
 
@@ -205,6 +208,7 @@ impl Stats {
             Variant::FortyEight => &mut self.forty_eight,
             Variant::Bakers(v) => &mut self.bakers[v.min(bakers::CUSTOM)],
             Variant::Castle(v) => &mut self.castle[v.min(castle::CUSTOM)],
+            Variant::Normandy => &mut self.normandy,
         }
     }
 

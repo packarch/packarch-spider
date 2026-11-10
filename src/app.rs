@@ -16,7 +16,7 @@ use crate::cards::{self, Card};
 use crate::freecell::{self, Build, EmptyFill};
 use crate::spider::{self, ROWS};
 use crate::storage::{self, SavedState, Settings, Stats};
-use crate::{aces, bakers, castle, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
+use crate::{aces, bakers, castle, clock, normandy, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
 
 const APP_NAME: &str = "Packarch Spider";
 /// Écart horizontal entre colonnes du Spider, en largeurs de carte (comme KPatience).
@@ -312,6 +312,7 @@ impl Layout {
             AnyGame::FortyEight(g) => Layout::fortyeight(rect, ratio, g),
             AnyGame::Bakers(g) => Layout::bakers(rect, ratio, g),
             AnyGame::Castle(g) => Layout::castle(rect, ratio, g),
+            AnyGame::Normandy(g) => Layout::normandy(rect, ratio, g),
         }
     }
 
@@ -467,6 +468,51 @@ impl Layout {
             .collect();
         // KPatience distribue depuis le bas de l'écran.
         let deal_origin = Pos2::new(piles[0].origin.x, rect.bottom());
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `Normandy::initialize` : les 8 colonnes à gauche, les
+    /// 8 fondations en deux colonnes à droite, le talon en dessous. Positions
+    /// en largeurs (x) et hauteurs (y) de carte.
+    fn normandy(rect: Rect, ratio: f32, game: &normandy::Game) -> Layout {
+        const DIST_X: f32 = 1.11;
+        const DIST_Y: f32 = 1.11;
+        let mut units = [(0.0, 0.0); normandy::PILES];
+        for (i, u) in units.iter_mut().enumerate().take(normandy::STORES) {
+            *u = (DIST_X * i as f32, 0.0);
+        }
+        for i in 0..8 {
+            units[normandy::FOUNDATION + i] = (DIST_X * (8 + i / 4) as f32 + 0.4, (i % 4) as f32 * DIST_Y);
+        }
+        units[normandy::TALON] = (8.5 * DIST_X + 0.4, 4.0 * DIST_Y);
+        let width_units = 9.0 * DIST_X + 0.4 + 1.0;
+        let height_units = 4.0 * DIST_Y + 1.0;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0;
+        let y0 = rect.top() + LAYOUT_MARGIN * h;
+        let bottom = rect.bottom() - LAYOUT_MARGIN * h;
+        let piles: Vec<PileGeom> = units
+            .iter()
+            .enumerate()
+            .map(|(i, &(ux, uy))| {
+                let origin = Pos2::new(x0 + ux * w, y0 + uy * h);
+                if i < normandy::STORES {
+                    let avail = (bottom - origin.y - h).max(h * 0.5);
+                    PileGeom {
+                        origin,
+                        fan: Fan::Down,
+                        gaps: fan_gaps(&game.piles[i], h, avail),
+                        zone: Rect::from_min_max(origin, Pos2::new(origin.x + w, rect.bottom().max(origin.y + h))),
+                    }
+                } else {
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+            })
+            .collect();
+        let deal_origin = piles[normandy::TALON].origin;
         Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
     }
 
@@ -1158,6 +1204,7 @@ fn new_game(settings: &Settings, deal: u32) -> AnyGame {
         GameKind::FortyEight => AnyGame::FortyEight(fortyeight::Game::new(deal)),
         GameKind::Bakers => AnyGame::Bakers(bakers::Game::new(settings.bakers, deal)),
         GameKind::Castle => AnyGame::Castle(castle::Game::new(settings.castle, deal)),
+        GameKind::Normandy => AnyGame::Normandy(normandy::Game::new(deal)),
     }
 }
 
@@ -1192,6 +1239,7 @@ fn apply_variant(settings: &mut Settings, variant: Variant) {
                 settings.bakers = *o;
             }
         }
+        Variant::Normandy => settings.game = GameKind::Normandy,
         Variant::Castle(v) => {
             settings.game = GameKind::Castle;
             if let Some((_, o)) = castle::PRESETS.get(v) {
@@ -1638,7 +1686,7 @@ impl SpiderApp {
         if pressed(ctx, Modifiers::NONE, Key::D) {
             self.toggle_demo();
         }
-        if pressed(ctx, Modifiers::NONE, Key::Enter) && matches!(self.game.kind(), GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp) {
+        if pressed(ctx, Modifiers::NONE, Key::Enter) && matches!(self.game.kind(), GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp | GameKind::Normandy) {
             self.deal();
         }
         if pressed(ctx, Modifiers::NONE, Key::Tab) && matches!(self.game.kind(), GameKind::Klondike | GameKind::Golf | GameKind::FortyEight) {
@@ -1696,7 +1744,7 @@ impl SpiderApp {
                     self.toggle_demo();
                 }
                 match self.game.kind() {
-                    GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp => {
+                    GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp | GameKind::Normandy => {
                         if ui
                             .add_enabled(self.game.can_deal(), egui::Button::new("Distribuer une rangée").shortcut_text("Entrée"))
                             .clicked()
@@ -1725,7 +1773,7 @@ impl SpiderApp {
             ui.menu_button("Configuration", |ui| {
                 if !self.selecting && !matches!(
                         self.game.kind(),
-                        GameKind::Clock | GameKind::Simon | GameKind::Golf | GameKind::Yukon | GameKind::Grandfather | GameKind::Mod3 | GameKind::AcesUp | GameKind::FortyEight
+                        GameKind::Clock | GameKind::Simon | GameKind::Golf | GameKind::Yukon | GameKind::Grandfather | GameKind::Mod3 | GameKind::AcesUp | GameKind::FortyEight | GameKind::Normandy
                     ) {
                     match &self.game {
                         AnyGame::Spider(_) => self.spider_options(ui),
@@ -1759,7 +1807,8 @@ impl SpiderApp {
                         | AnyGame::Grandfather(_)
                         | AnyGame::Mod3(_)
                         | AnyGame::AcesUp(_)
-                        | AnyGame::FortyEight(_) => {}
+                        | AnyGame::FortyEight(_)
+                        | AnyGame::Normandy(_) => {}
                     }
                     ui.separator();
                 }
@@ -1837,6 +1886,7 @@ impl SpiderApp {
                     GameKind::FortyEight => "Règles de Quarante & Huit",
                     GameKind::Bakers => "Règles de Treize à la douzaine",
                     GameKind::Castle => "Règles de Château",
+                    GameKind::Normandy => "Règles de Normandie",
                 };
                 if ui.add(egui::Button::new(rules).shortcut_text("F1")).clicked() {
                     self.dialog = Dialog::Rules;
@@ -2080,7 +2130,7 @@ impl SpiderApp {
                 self.toggle_demo();
             }
             match self.game.kind() {
-                GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp => {
+                GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp | GameKind::Normandy => {
                     if tool_button(ui, text, Icon::Deal, "Distribuer", "Distribuer une rangée (Entrée)", g && self.game.can_deal(), false)
                         .clicked()
                     {
@@ -2243,7 +2293,7 @@ impl SpiderApp {
                     .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
                     .show(ctx, |ui| {
                         ui.heading(format!("{APP_NAME} {}", env!("CARGO_PKG_VERSION")));
-                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit,\nTreize à la douzaine et Château.");
+                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit,\nTreize à la douzaine, Château et Normandie.");
                         ui.add_space(6.0);
                         ui.label("Portage en Rust de jeux de KPatience, le jeu de patience du projet KDE.");
                         ui.hyperlink_to("KPatience", "https://apps.kde.org/kpat");
@@ -2275,6 +2325,7 @@ impl SpiderApp {
                     GameKind::FortyEight => ("Règles de Quarante & Huit", RULES_FORTY_EIGHT),
                     GameKind::Bakers => ("Règles de Treize à la douzaine", RULES_BAKERS),
                     GameKind::Castle => ("Règles de Château", RULES_CASTLE),
+                    GameKind::Normandy => ("Règles de Normandie", RULES_NORMANDY),
                 };
                 egui::Window::new(title)
                     .collapsible(false)
@@ -2557,7 +2608,7 @@ impl SpiderApp {
             }
             return;
         }
-        // Klondike, Golf, Mod3 et les As : un clic sur le talon (ou sa place vide) pioche,
+        // Klondike, Golf, Mod3, les As, Quarante & Huit et Normandie : un clic sur le talon (ou sa place vide) pioche,
         // même en double-clic.
         let on_klondike_stock = |p: Pos2| self.game.stock_pile().is_some_and(|sp| layout.slot_rect(sp).contains(p));
         if response.clicked() || response.double_clicked() {
@@ -2651,7 +2702,7 @@ fn variant_combo(ui: &mut egui::Ui, id: &str, variant: &mut Variant) {
 
 /// Les jeux de l'écran de choix, dans l'ordre alphabétique (comme
 /// KPatience), avec leur aperçu (`previews/` de KPatience).
-const GAMES: [(GameKind, &str, &[u8]); 13] = [
+const GAMES: [(GameKind, &str, &[u8]); 14] = [
     (GameKind::Castle, "Château", include_bytes!("../data/previews/castle.png")),
     (GameKind::FreeCell, "FreeCell", include_bytes!("../data/previews/freecell.png")),
     (GameKind::Golf, "Golf", include_bytes!("../data/previews/golf.png")),
@@ -2660,6 +2711,7 @@ const GAMES: [(GameKind, &str, &[u8]); 13] = [
     (GameKind::AcesUp, "Les as", include_bytes!("../data/previews/aces.png")),
     (GameKind::Clock, "L'horloge du grand-père", include_bytes!("../data/previews/clock.png")),
     (GameKind::Mod3, "Mod3", include_bytes!("../data/previews/mod3.png")),
+    (GameKind::Normandy, "Normandie", include_bytes!("../data/previews/normandy.png")),
     (GameKind::FortyEight, "Quarante & Huit", include_bytes!("../data/previews/fortyeight.png")),
     (GameKind::Simon, "Simon le simple", include_bytes!("../data/previews/simon.png")),
     (GameKind::Spider, "Spider", include_bytes!("../data/previews/spider.png")),
@@ -3313,6 +3365,24 @@ carte par carte.
 Variantes : Château assiégé (As d'avance), Citadelle (As et cartes suivantes d'avance), Rois \
 exilés (comme Citadelle, colonnes vides aux Rois), Rues et allées (sans As d'avance), Engin de \
 siège (une réserve), Forteresse (une réserve, sans As d'avance).
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups utiles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_NORMANDY: &str = "\
+But : monter les 104 cartes (2 jeux) sur les 8 fondations, de l'As au Roi dans la même couleur.
+
+• 8 colonnes d'une carte cachée et de deux visibles ; le reste forme le talon.
+• Sur une colonne, on descend en alternant rouge et noir. Toute suite ainsi rangée se \
+déplace d'un bloc, quelle que soit sa longueur ; une colonne vide reçoit n'importe quelle \
+suite.
+• La carte du dessus d'une fondation peut redescendre sur une colonne.
+• « Distribuer » (Entrée, ou un clic sur le talon) pose une carte sur chaque colonne ; le \
+talon ne se refait pas.
+• Les cartes qui ne servent plus sur les colonnes vont toutes seules sur les fondations \
+(dépôt automatique).
+• Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
 
 Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
 gagnant ; sinon, les coups utiles.
