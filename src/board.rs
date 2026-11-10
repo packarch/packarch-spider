@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::cards::Card;
 use crate::freecell::{self, Code};
-use crate::{aces, aces_solver, bakers, castle, clock, normandy, normandy_solver, fortyeight, fortyeight_solver, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
+use crate::{aces, aces_solver, bakers, bizilizi, bizilizi_solver, castle, clock, normandy, normandy_solver, fortyeight, fortyeight_solver, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
 
 /// Un coup du joueur (ou du solveur).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -48,6 +48,7 @@ pub enum GameKind {
     Bakers,
     Castle,
     Normandy,
+    Bizilizi,
 }
 
 /// Une variante, pour les statistiques et les donnes numérotées : le Spider
@@ -71,10 +72,12 @@ pub enum Variant {
     /// Château : variante 0 à 5, ou personnalisée.
     Castle(usize),
     Normandy,
+    /// Bizilizi : 2 ou 3 cartes cachées en plus (23 ou 24 en tout).
+    Bizilizi(u8),
 }
 
 impl Variant {
-    pub const ALL: [Variant; 33] = [
+    pub const ALL: [Variant; 35] = [
         Variant::Klondike(1),
         Variant::Klondike(3),
         Variant::Spider(1),
@@ -108,6 +111,8 @@ impl Variant {
         Variant::Castle(5),
         Variant::Castle(castle::CUSTOM),
         Variant::Normandy,
+        Variant::Bizilizi(2),
+        Variant::Bizilizi(3),
     ];
 
     pub fn name(self) -> String {
@@ -127,6 +132,7 @@ impl Variant {
             Variant::Bakers(v) => bakers::variant_name(v).into(),
             Variant::Castle(v) => castle::variant_name(v).into(),
             Variant::Normandy => "Normandie".into(),
+            Variant::Bizilizi(e) => format!("Bizilizi ({} cartes cachées)", 21 + e),
         }
     }
 }
@@ -162,6 +168,7 @@ pub enum AnyGame {
     Bakers(bakers::Game),
     Castle(castle::Game),
     Normandy(normandy::Game),
+    Bizilizi(bizilizi::Game),
 }
 
 impl AnyGame {
@@ -181,6 +188,7 @@ impl AnyGame {
             AnyGame::Bakers(_) => GameKind::Bakers,
             AnyGame::Castle(_) => GameKind::Castle,
             AnyGame::Normandy(_) => GameKind::Normandy,
+            AnyGame::Bizilizi(_) => GameKind::Bizilizi,
         }
     }
 
@@ -200,6 +208,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => Variant::Bakers(g.bakers.variant()),
             AnyGame::Castle(g) => Variant::Castle(g.castle.variant()),
             AnyGame::Normandy(_) => Variant::Normandy,
+            AnyGame::Bizilizi(g) => Variant::Bizilizi(g.bizilizi),
         }
     }
 
@@ -207,7 +216,7 @@ impl AnyGame {
         match self {
             AnyGame::Spider(g) => format!("Spider ({} couleur{})", g.suit_count, if g.suit_count > 1 { "s" } else { "" }),
             AnyGame::FreeCell(g) => g.options.name().into(),
-            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::AcesUp(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_) => self.variant().name(),
+            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::AcesUp(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_) | AnyGame::Bizilizi(_) => self.variant().name(),
         }
     }
 
@@ -228,6 +237,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => AnyGame::Bakers(bakers::Game::new(g.bakers, g.deal_number)),
             AnyGame::Castle(g) => AnyGame::Castle(castle::Game::new(g.castle, g.deal_number)),
             AnyGame::Normandy(g) => AnyGame::Normandy(normandy::Game::new(g.deal_number)),
+            AnyGame::Bizilizi(g) => AnyGame::Bizilizi(bizilizi::Game::new(g.bizilizi, g.deal_number)),
         }
     }
 
@@ -247,6 +257,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.deal_number,
             AnyGame::Castle(g) => g.deal_number,
             AnyGame::Normandy(g) => g.deal_number,
+            AnyGame::Bizilizi(g) => g.deal_number,
         }
     }
 
@@ -266,6 +277,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.moves,
             AnyGame::Castle(g) => g.moves,
             AnyGame::Normandy(g) => g.moves,
+            AnyGame::Bizilizi(g) => g.moves,
         }
     }
 
@@ -285,6 +297,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.is_won(),
             AnyGame::Castle(g) => g.is_won(),
             AnyGame::Normandy(g) => g.is_won(),
+            AnyGame::Bizilizi(g) => g.is_won(),
         }
     }
 
@@ -304,6 +317,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.can_undo(),
             AnyGame::Castle(g) => g.can_undo(),
             AnyGame::Normandy(g) => g.can_undo(),
+            AnyGame::Bizilizi(g) => g.can_undo(),
         }
     }
 
@@ -323,6 +337,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.can_redo(),
             AnyGame::Castle(g) => g.can_redo(),
             AnyGame::Normandy(g) => g.can_redo(),
+            AnyGame::Bizilizi(g) => g.can_redo(),
         }
     }
 
@@ -342,6 +357,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.undo(),
             AnyGame::Castle(g) => g.undo(),
             AnyGame::Normandy(g) => g.undo(),
+            AnyGame::Bizilizi(g) => g.undo(),
         }
     }
 
@@ -361,6 +377,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.redo(),
             AnyGame::Castle(g) => g.redo(),
             AnyGame::Normandy(g) => g.redo(),
+            AnyGame::Bizilizi(g) => g.redo(),
         }
     }
 
@@ -380,6 +397,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.play(m),
             AnyGame::Castle(g) => g.play(m),
             AnyGame::Normandy(g) => g.play(m),
+            AnyGame::Bizilizi(g) => g.play(m),
         }
     }
 
@@ -390,7 +408,7 @@ impl AnyGame {
     pub fn can_deal(&self) -> bool {
         match self {
             AnyGame::Spider(g) => !g.stock.is_empty(),
-            AnyGame::FreeCell(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Yukon(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) => false,
+            AnyGame::FreeCell(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Yukon(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Bizilizi(_) => false,
             AnyGame::Klondike(g) => g.can_draw(),
             AnyGame::Golf(g) => g.can_draw(),
             AnyGame::Grandfather(g) => g.can_redeal(),
@@ -434,6 +452,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.piles.len(),
             AnyGame::Castle(g) => g.piles.len(),
             AnyGame::Normandy(g) => g.piles.len(),
+            AnyGame::Bizilizi(g) => g.piles.len(),
         }
     }
 
@@ -453,6 +472,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => &g.piles[p],
             AnyGame::Castle(g) => &g.piles[p],
             AnyGame::Normandy(g) => &g.piles[p],
+            AnyGame::Bizilizi(g) => &g.piles[p],
         }
     }
 
@@ -491,6 +511,11 @@ impl AnyGame {
                 aces::AWAY => PileKind::Foundation,
                 _ => PileKind::Stock,
             },
+            AnyGame::Bizilizi(_) => match p {
+                0..bizilizi::STORES => PileKind::Tableau,
+                bizilizi::POOL => PileKind::Waste,
+                _ => PileKind::Foundation,
+            },
             AnyGame::Normandy(_) => match p {
                 0..normandy::STORES => PileKind::Tableau,
                 normandy::TALON => PileKind::Stock,
@@ -528,6 +553,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.can_pick(p, index),
             AnyGame::Castle(g) => g.can_pick(p, index),
             AnyGame::Normandy(g) => g.can_pick(p, index),
+            AnyGame::Bizilizi(g) => g.can_pick(p, index),
         }
     }
 
@@ -548,6 +574,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.is_legal(m),
             AnyGame::Castle(g) => g.is_legal(m),
             AnyGame::Normandy(g) => g.is_legal(m),
+            AnyGame::Bizilizi(g) => g.is_legal(m),
         }
     }
 
@@ -568,6 +595,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.auto_move(p, index),
             AnyGame::Castle(g) => g.auto_move(p, index),
             AnyGame::Normandy(g) => g.auto_move(p, index),
+            AnyGame::Bizilizi(g) => g.auto_move(p, index),
         }
     }
 
@@ -587,6 +615,7 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.sensible_moves(),
             AnyGame::Castle(g) => g.sensible_moves(),
             AnyGame::Normandy(g) => normandy_solver::useful_moves(g),
+            AnyGame::Bizilizi(g) => bizilizi_solver::useful_moves(g),
         }
     }
 
@@ -609,7 +638,14 @@ impl AnyGame {
             AnyGame::Bakers(g) => g.autodrop(),
             AnyGame::Castle(g) => g.autodrop(),
             AnyGame::Normandy(g) => g.autodrop(),
+            AnyGame::Bizilizi(g) => g.autodrop(),
         }
+    }
+
+    /// Bizilizi : on ne prend qu'une carte de la réserve, pas celles qui la
+    /// recouvrent.
+    pub fn picks_single(&self, p: usize) -> bool {
+        matches!(self, AnyGame::Bizilizi(_)) && p == bizilizi::POOL
     }
 
     /// Klondike : piocher aussitôt après un dépôt automatique qui a vidé la
@@ -619,7 +655,7 @@ impl AnyGame {
     }
 
     pub fn uses_autodrop(&self) -> bool {
-        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_))
+        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::FortyEight(_) | AnyGame::Bakers(_) | AnyGame::Castle(_) | AnyGame::Normandy(_) | AnyGame::Bizilizi(_))
     }
 
     /// Clé de la position, pour garder les résultats du solveur.
@@ -687,6 +723,14 @@ impl AnyGame {
                 key.push(6);
                 for p in &g.piles {
                     key.extend(p.iter().map(|c| c.code()));
+                    key.push(255);
+                }
+            }
+            AnyGame::Bizilizi(g) => {
+                key.push(15);
+                key.push(g.bizilizi);
+                for p in &g.piles {
+                    key.extend(p.iter().map(|c| c.code() | if c.face_up { 64 } else { 0 }));
                     key.push(255);
                 }
             }
@@ -766,6 +810,7 @@ pub fn solve(game: &AnyGame, stop: &AtomicBool) -> Outcome {
         AnyGame::Bakers(g) => bakers::solve(g, stop),
         AnyGame::Castle(g) => castle::solve(g, stop),
         AnyGame::Normandy(g) => normandy_solver::solve(g, stop),
+        AnyGame::Bizilizi(g) => bizilizi_solver::solve(g, stop),
     }
 }
 
@@ -792,6 +837,7 @@ mod tests {
             AnyGame::Bakers(bakers::Game::new(bakers::PRESETS[2].1, 3)),
             AnyGame::Castle(castle::Game::new(castle::PRESETS[4].1, 3)),
             AnyGame::Normandy(normandy::Game::new(3)),
+            AnyGame::Bizilizi(bizilizi::Game::new(3, 3)),
         ];
         for g in games {
             let json = serde_json::to_string(&g).unwrap();

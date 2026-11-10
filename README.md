@@ -1,7 +1,7 @@
 # packarch-spider
 
 Le **Spider**, le **FreeCell**, le **Klondike**, **l'horloge du grand-père**, **Simon le simple**, le
-**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit**, **Treize à la douzaine**, **Château** et **Normandie** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
+**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit**, **Treize à la douzaine**, **Château**, **Normandie** et **Bizilizi** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
 pour [Packarch](https://github.com/packarch/CachyOS-Packarch).
 
 C'est un portage de jeux de [KPatience](https://apps.kde.org/kpat/) (KDE), dont il reprend
@@ -212,6 +212,19 @@ flèches et Entrée) ; **Nouvelle donne** (Ctrl+N) redistribue le même jeu.
   Sur les donnes 1 à 1000 : 868 gagnées, 0 perdue, 132 indéterminées (limite d'un million de
   positions ; 85 s pour les 1000, 1,5 s au pire, 207 Mo au pic).
 
+## Bizilizi
+
+- Les règles de KPatience : un Klondike sans talon, 7 colonnes avec 23 (ou 24) cartes
+  cachées ; les autres cartes dans la réserve, toutes visibles, rangées par rang du Roi au
+  2, où l'on prend n'importe quelle carte, une seule à la fois ; As posés d'avance ; on
+  descend en alternant rouge et noir, un Roi seulement sur une colonne vide ; dépôt
+  automatique sans risque. Les aides de KPatience « Pool Analysis » et « Delayed Hints » ne
+  sont pas portées ;
+- **outil de résolution** : portage de `BiziliziSolver` de KPatience sur le moteur
+  `patsolve` (mêmes priorités) ; il envisage de sortir n'importe quelle carte de la réserve
+  (l'original, seulement la dernière). Sur les donnes 1 à 100 : 23 cartes cachées 83 gagnées,
+  10 perdues, 7 indéterminées ; 24 cartes cachées 89 / 9 / 2 (0,7 s au pire).
+
 ## Compilation
 
 ```sh
@@ -245,6 +258,8 @@ cargo build --release
 ./target/release/packarch-spider --solve-castle 0 1 100 # idem à Château
 ./target/release/packarch-spider --deal 42 --normandy # Normandie, donne n° 42
 ./target/release/packarch-spider --solve-normandy 1 100 # idem à Normandie
+./target/release/packarch-spider --deal 42 --bizilizi 23 # Bizilizi, donne n° 42 (23 ou 24 cartes cachées)
+./target/release/packarch-spider --solve-bizilizi 23 1 100 # idem à Bizilizi
 cargo test --release
 ```
 
@@ -281,7 +296,7 @@ done
 - `src/freecell_solver.rs` : outil de résolution du FreeCell (aussi pour Treize à la douzaine et Château) ;
 - `src/klondike.rs` : règles du Klondike ;
 - `src/patsolve.rs` : le moteur de recherche `patsolve` de KPatience, commun au Klondike, à l'horloge, au
-  Yukon, à Grand-père, à Mod3, à Quarante & Huit et à Normandie, et le stockage compact de leurs piles (`Piles`) ;
+  Yukon, à Grand-père, à Mod3, à Quarante & Huit, à Normandie et à Bizilizi, et le stockage compact de leurs piles (`Piles`) ;
 - `src/klondike_solver.rs` : outil de résolution du Klondike, portage de `KlondikeSolver` ;
 - `src/clock.rs` : règles de l'horloge du grand-père ;
 - `src/clock_solver.rs` : son outil de résolution, portage de `ClockSolver` ;
@@ -303,6 +318,8 @@ done
 - `src/castle.rs` : règles et variantes de Château ;
 - `src/normandy.rs` : règles de Normandie ;
 - `src/normandy_solver.rs` : son outil de résolution, portage de `NormandySolver` ;
+- `src/bizilizi.rs` : règles de Bizilizi ;
+- `src/bizilizi_solver.rs` : son outil de résolution, portage de `BiziliziSolver` ;
 - `src/assets.rs` : jeux de cartes et thèmes SVG (rendus avec resvg) ;
 - `src/storage.rs` : réglages, statistiques, partie en cours ;
 - `src/app.rs` : interface.
@@ -311,5 +328,5 @@ done
 
 GPL-2.0-or-later (`COPYING`). D'après KPatience : © 1995 Paul Olav Tvete, © 2000 Stephan Kulow,
 Josh Metzler (Spider), Stephan Kulow (outil de résolution du Spider), Rodolfo Borges, Stephan
-Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine, Château, Normandie), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
+Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine, Château, Normandie, Bizilizi), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
 libkdegames et KPatience (licences dans `data/carddecks/*`).

@@ -16,7 +16,7 @@ use crate::cards::{self, Card};
 use crate::freecell::{self, Build, EmptyFill};
 use crate::spider::{self, ROWS};
 use crate::storage::{self, SavedState, Settings, Stats};
-use crate::{aces, bakers, castle, clock, normandy, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
+use crate::{aces, bakers, bizilizi, castle, clock, normandy, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
 
 const APP_NAME: &str = "Packarch Spider";
 /// Écart horizontal entre colonnes du Spider, en largeurs de carte (comme KPatience).
@@ -263,6 +263,15 @@ enum Fan {
         n: usize,
         gap: f32,
     },
+    /// Bizilizi : la réserve, une colonne par rang du Roi au 2 (`dx` entre
+    /// deux rangs), la teinte attendue en haut et l'autre `ydiff` plus bas,
+    /// la seconde carte d'une même teinte `ysame` plus bas
+    /// (`BiziPile::cardPositions`).
+    Pool {
+        dx: f32,
+        ydiff: f32,
+        ysame: f32,
+    },
 }
 
 /// Spider : la réserve en bas à droite, les suites sorties en bas à gauche.
@@ -313,6 +322,7 @@ impl Layout {
             AnyGame::Bakers(g) => Layout::bakers(rect, ratio, g),
             AnyGame::Castle(g) => Layout::castle(rect, ratio, g),
             AnyGame::Normandy(g) => Layout::normandy(rect, ratio, g),
+            AnyGame::Bizilizi(g) => Layout::bizilizi(rect, ratio, g),
         }
     }
 
@@ -468,6 +478,57 @@ impl Layout {
             .collect();
         // KPatience distribue depuis le bas de l'écran.
         let deal_origin = Pos2::new(piles[0].origin.x, rect.bottom());
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `Bizilizi::initialize` : les 7 colonnes en haut, la
+    /// réserve en dessous (un rang par colonne), les 4 fondations à droite.
+    /// Positions en largeurs (x) et hauteurs (y) de carte.
+    fn bizilizi(rect: Rect, ratio: f32, game: &bizilizi::Game) -> Layout {
+        const H_SPACING: f32 = 0.185;
+        const V_SPACING: f32 = 0.085;
+        const POOL_Y: f32 = 3.4;
+        const PLAY_WIDTH: f32 = 8.1;
+        const YDIFF: f32 = 0.5;
+        const YSAME: f32 = 0.28;
+        let width_units = 8.7 + 1.0;
+        let height_units = POOL_Y + YDIFF + YSAME + 1.0;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0;
+        let y0 = rect.top() + LAYOUT_MARGIN * h;
+        let at = |x: f32, y: f32| Pos2::new(x0 + x * w, y0 + y * h);
+        let piles: Vec<PileGeom> = (0..bizilizi::PILES)
+            .map(|i| match i {
+                0..bizilizi::STORES => {
+                    let origin = at(0.1 + (1.0 + H_SPACING) * i as f32, 0.0);
+                    let avail = (y0 + (POOL_Y - LAYOUT_SPACING) * h - origin.y - h).max(h * 0.5);
+                    PileGeom {
+                        origin,
+                        fan: Fan::Down,
+                        gaps: fan_gaps(&game.piles[i], h, avail),
+                        zone: Rect::from_min_max(origin, Pos2::new(origin.x + w, y0 + POOL_Y * h)),
+                    }
+                }
+                bizilizi::POOL => {
+                    let origin = at(0.0, POOL_Y);
+                    PileGeom {
+                        origin,
+                        fan: Fan::Pool { dx: (PLAY_WIDTH - 1.0) / 10.0 * w, ydiff: YDIFF * h, ysame: YSAME * h },
+                        gaps: (0.0, 0.0),
+                        zone: Rect::from_min_size(origin, Vec2::new((11.0 * (PLAY_WIDTH - 1.0) / 10.0 + 1.0) * w, (YDIFF + YSAME + 1.0) * h)),
+                    }
+                }
+                _ => {
+                    let k = (i - bizilizi::FOUNDATION) as f32;
+                    let origin = at(8.7, 0.066 + (1.0 + V_SPACING) * k);
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+            })
+            .collect();
+        let deal_origin = piles[0].origin;
         Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
     }
 
@@ -1042,6 +1103,26 @@ impl Layout {
                 let first = game.pile(p).len().saturating_sub(n);
                 pos.x += index.saturating_sub(first) as f32 * gap;
             }
+            Fan::Pool { dx, ydiff, ysame } => {
+                let cards = game.pile(p);
+                let mut prev: Option<bool> = None;
+                let mut rank = 0;
+                let mut y = 0.0;
+                for c in &cards[..=index.min(cards.len().saturating_sub(1))] {
+                    if c.rank != rank {
+                        rank = c.rank;
+                        prev = None;
+                    }
+                    // Rang impair : le noir en haut ; pair : le rouge.
+                    let red = c.suit.is_red();
+                    let first_tint = red == (rank % 2 == 0);
+                    let same = prev == Some(red);
+                    y = if first_tint { 0.0 } else { ydiff } + if same { ysame } else { 0.0 };
+                    prev = Some(red);
+                }
+                pos.x += (13 - rank.min(13)) as f32 * dx;
+                pos.y += y;
+            }
         }
         pos
     }
@@ -1124,6 +1205,7 @@ enum Action {
     SetFreeCell(freecell::Options),
     SetBakers(bakers::Options),
     SetCastle(castle::Options),
+    SetBiziliziExtra(u8),
     SetKlondikeDraw(u8),
 }
 
@@ -1205,6 +1287,7 @@ fn new_game(settings: &Settings, deal: u32) -> AnyGame {
         GameKind::Bakers => AnyGame::Bakers(bakers::Game::new(settings.bakers, deal)),
         GameKind::Castle => AnyGame::Castle(castle::Game::new(settings.castle, deal)),
         GameKind::Normandy => AnyGame::Normandy(normandy::Game::new(deal)),
+        GameKind::Bizilizi => AnyGame::Bizilizi(bizilizi::Game::new(settings.bizilizi_extra, deal)),
     }
 }
 
@@ -1240,6 +1323,10 @@ fn apply_variant(settings: &mut Settings, variant: Variant) {
             }
         }
         Variant::Normandy => settings.game = GameKind::Normandy,
+        Variant::Bizilizi(e) => {
+            settings.game = GameKind::Bizilizi;
+            settings.bizilizi_extra = e;
+        }
         Variant::Castle(v) => {
             settings.game = GameKind::Castle;
             if let Some((_, o)) = castle::PRESETS.get(v) {
@@ -1365,6 +1452,10 @@ impl SpiderApp {
             }
             Action::SetCastle(o) => {
                 self.settings.castle = o.sanitized();
+                deal
+            }
+            Action::SetBiziliziExtra(e) => {
+                self.settings.bizilizi_extra = e;
                 deal
             }
             Action::SetKlondikeDraw(d) => {
@@ -1752,7 +1843,7 @@ impl SpiderApp {
                             self.deal();
                         }
                     }
-                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle => {}
+                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle | GameKind::Bizilizi => {}
                     GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                         if ui.add_enabled(self.game.can_deal(), egui::Button::new("Piocher").shortcut_text("Tab")).clicked() {
                             self.deal();
@@ -1788,6 +1879,16 @@ impl SpiderApp {
                         AnyGame::Castle(g) => {
                             let options = g.castle;
                             self.castle_options(ui, options);
+                        }
+                        AnyGame::Bizilizi(g) => {
+                            let extra = g.bizilizi;
+                            ui.menu_button("Cartes cachées", |ui| {
+                                for (e, label) in [(2, "23 cartes cachées"), (3, "24 cartes cachées (plus difficile)")] {
+                                    if ui.radio(extra == e, label).clicked() && extra != e {
+                                        self.request(Action::SetBiziliziExtra(e));
+                                    }
+                                }
+                            });
                         }
                         AnyGame::Klondike(g) => {
                             let draw = g.draw;
@@ -1887,6 +1988,7 @@ impl SpiderApp {
                     GameKind::Bakers => "Règles de Treize à la douzaine",
                     GameKind::Castle => "Règles de Château",
                     GameKind::Normandy => "Règles de Normandie",
+                    GameKind::Bizilizi => "Règles de Bizilizi",
                 };
                 if ui.add(egui::Button::new(rules).shortcut_text("F1")).clicked() {
                     self.dialog = Dialog::Rules;
@@ -2137,7 +2239,7 @@ impl SpiderApp {
                         self.deal();
                     }
                 }
-                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle => {}
+                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle | GameKind::Bizilizi => {}
                 GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                     if tool_button(ui, text, Icon::Draw, "Piocher", "Piocher (Tab)", g && self.game.can_deal(), false).clicked() {
                         self.deal();
@@ -2293,7 +2395,7 @@ impl SpiderApp {
                     .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
                     .show(ctx, |ui| {
                         ui.heading(format!("{APP_NAME} {}", env!("CARGO_PKG_VERSION")));
-                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit,\nTreize à la douzaine, Château et Normandie.");
+                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit,\nTreize à la douzaine, Château, Normandie et Bizilizi.");
                         ui.add_space(6.0);
                         ui.label("Portage en Rust de jeux de KPatience, le jeu de patience du projet KDE.");
                         ui.hyperlink_to("KPatience", "https://apps.kde.org/kpat");
@@ -2326,6 +2428,7 @@ impl SpiderApp {
                     GameKind::Bakers => ("Règles de Treize à la douzaine", RULES_BAKERS),
                     GameKind::Castle => ("Règles de Château", RULES_CASTLE),
                     GameKind::Normandy => ("Règles de Normandie", RULES_NORMANDY),
+                    GameKind::Bizilizi => ("Règles de Bizilizi", RULES_BIZILIZI),
                 };
                 egui::Window::new(title)
                     .collapsible(false)
@@ -2409,7 +2512,7 @@ impl SpiderApp {
             .and_then(|d| response.interact_pointer_pos().or(ctx.pointer_latest_pos()).map(|p| (d.from, d.index, p - d.grab)));
         let mut draw: Vec<(i32, Card, Pos2)> = Vec::with_capacity(placed.len());
         for p in &placed {
-            let dragged = matches!((dragging, p.place), (Some((from, index, _)), Place::Pile(c, i)) if c == from && i >= index);
+            let dragged = matches!((dragging, p.place), (Some((from, index, _)), Place::Pile(c, i)) if c == from && (i == index || (i > index && !self.game.picks_single(c))));
             let target = match dragging {
                 Some((from, index, origin)) if dragged => origin + (p.pos - layout.card_pos(&self.game, from, index)),
                 _ => p.pos,
@@ -2702,7 +2805,8 @@ fn variant_combo(ui: &mut egui::Ui, id: &str, variant: &mut Variant) {
 
 /// Les jeux de l'écran de choix, dans l'ordre alphabétique (comme
 /// KPatience), avec leur aperçu (`previews/` de KPatience).
-const GAMES: [(GameKind, &str, &[u8]); 14] = [
+const GAMES: [(GameKind, &str, &[u8]); 15] = [
+    (GameKind::Bizilizi, "Bizilizi", include_bytes!("../data/previews/bizilizi.png")),
     (GameKind::Castle, "Château", include_bytes!("../data/previews/castle.png")),
     (GameKind::FreeCell, "FreeCell", include_bytes!("../data/previews/freecell.png")),
     (GameKind::Golf, "Golf", include_bytes!("../data/previews/golf.png")),
@@ -3382,6 +3486,24 @@ suite.
 talon ne se refait pas.
 • Les cartes qui ne servent plus sur les colonnes vont toutes seules sur les fondations \
 (dépôt automatique).
+• Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups utiles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_BIZILIZI: &str = "\
+But : monter les 52 cartes sur les 4 fondations, de l'As au Roi dans la même couleur.
+
+• Comme un Klondike sans talon : 7 colonnes, avec 23 cartes cachées en tout (24 selon le \
+menu Configuration).
+• Les autres cartes forment la réserve, en bas, toutes visibles, rangées par rang du Roi \
+au 2 ; les As sont posés d'avance sur les fondations. On peut prendre n'importe quelle carte \
+de la réserve, une seule à la fois.
+• Sur une colonne, on descend en alternant rouge et noir ; une suite se déplace d'un bloc. \
+Une colonne vide ne reçoit qu'un Roi.
+• Rien ne redescend des fondations. Les cartes qui ne servent plus vont toutes seules sur \
+les fondations (dépôt automatique).
 • Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
 
 Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \

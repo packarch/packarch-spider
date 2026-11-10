@@ -74,6 +74,8 @@ pub struct Settings {
     pub bakers: bakers::Options,
     /// Château : variante et options.
     pub castle: castle::Options,
+    /// Bizilizi : cartes cachées en plus (2 ou 3).
+    pub bizilizi_extra: u8,
     /// FreeCell et Klondike : dépôt automatique sur les fondations.
     pub autodrop: bool,
     /// Klondike : cartes retournées à chaque pioche (1 ou 3).
@@ -96,6 +98,7 @@ impl Default for Settings {
             freecell: freecell::Options::default(),
             bakers: bakers::Options::default(),
             castle: castle::Options::default(),
+            bizilizi_extra: 2,
             autodrop: true,
             klondike_draw: 1,
         }
@@ -108,6 +111,9 @@ impl Settings {
         s.suit_count = s.suit_count.clamp(1, 4);
         s.freecell = s.freecell.sanitized();
         s.castle = s.castle.sanitized();
+        if s.bizilizi_extra != 3 {
+            s.bizilizi_extra = 2;
+        }
         if s.klondike_draw != 3 {
             s.klondike_draw = 1;
         }
@@ -163,6 +169,8 @@ pub struct Stats {
     pub castle: [VariantStats; castle::VARIANTS],
     /// Normandie.
     pub normandy: VariantStats,
+    /// Bizilizi, 23 puis 24 cartes cachées.
+    pub bizilizi: [VariantStats; 2],
 }
 
 impl Stats {
@@ -190,6 +198,7 @@ impl Stats {
             Variant::Bakers(v) => &self.bakers[v.min(bakers::CUSTOM)],
             Variant::Castle(v) => &self.castle[v.min(castle::CUSTOM)],
             Variant::Normandy => &self.normandy,
+            Variant::Bizilizi(e) => &self.bizilizi[usize::from(e == 3)],
         }
     }
 
@@ -209,6 +218,7 @@ impl Stats {
             Variant::Bakers(v) => &mut self.bakers[v.min(bakers::CUSTOM)],
             Variant::Castle(v) => &mut self.castle[v.min(castle::CUSTOM)],
             Variant::Normandy => &mut self.normandy,
+            Variant::Bizilizi(e) => &mut self.bizilizi[usize::from(e == 3)],
         }
     }
 

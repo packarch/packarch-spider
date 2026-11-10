@@ -1,6 +1,6 @@
 # Où en est le portage (notes de reprise)
 
-Dernière mise à jour : 10 novembre 2026 (soir).
+Dernière mise à jour : 11 novembre 2026.
 
 Projet : `packarch-spider`, portage en Rust (egui) des jeux de KPatience. Les sources C++
 de référence sont dans `/mnt/ssd/dev/kpat` (fork Packarch Spider, C++/Qt ; aussi au tag `v1.0.1`
@@ -27,6 +27,7 @@ de la version C++ (jusqu'à `v1.0.1`).
 | Treize à la douzaine (Baker's Dozen) + 3 variantes et personnalisée | `bakers.rs` | celui du FreeCell (`freecell_solver::solve_piles`, 13 colonnes, 0 cellule ; KPat : Freecell Solver), qui garde maintenant des cartes cachées (`Code::hidden`, `HIDDEN`) | donnes 1 à 100 : 95/1/4, Patience espagnole 100/0/0, Châteaux en Espagne 97/3/0, Solitaire portugais 94/1/5 ; 1 s au pire |
 | Château (Castle) + 5 variantes et personnalisée | `castle.rs` | celui du FreeCell (`solve_piles`, réserves = cellules ; KPat : Freecell Solver) | donnes 1 à 100 : Château assiégé 71/28/1, Citadelle 87/13/0, Rois exilés 77/15/8, Rues et allées 47/45/8, Engin de siège 97/2/1, Forteresse 95/5/0 ; 0,6 s au pire |
 | Normandie (Normandy) | `normandy.rs` | `normandy_solver.rs`, portage de `NormandySolver` sur `patsolve.rs` (`Piles<9, 104>`, priorités `params`, Raymond à 8 fondations) ; grappe = fondations (KPat : 0) : 81/100 au lieu de 73 | 868/1000 gagnées, 0 perdue, 132 indéterminées (limite 1 million) ; 85 s pour les 1000, 1,5 s au pire, 207 Mo au pic |
+| Bizilizi (23 ou 24 cartes cachées) | `bizilizi.rs` | `bizilizi_solver.rs`, portage de `BiziliziSolver` sur `patsolve.rs` (`Piles<8>`, réserve = dernière pile, une carte quelconque en part) ; sorties étendues à toute la réserve | donnes 1 à 100 : 23 cachées 83/10/7, 24 cachées 89/9/2 ; 0,7 s au pire |
 | Mod3 | `mod3.rs` | `mod3_solver.rs`, portage de `Mod3Solver` sur `patsolve.rs` (`Piles<34, 104>`) | 747/1000 gagnées, 19 perdues, 234 indéterminées ; ≈ 0,5 s/donne, 2,6 s au pire, **245 Mo au pic** ; KPat 541/18/441, jamais contredit |
 
 Aussi fait :
@@ -46,13 +47,13 @@ Demande du 10 novembre 2026 : porter tous les jeux de KPatience qui manquent. Or
    `patsolve/bakersdozensolver.cpp`) — **fait** (commit « Treize à la douzaine »)
 2. Château (Castle et variantes : `castle.cpp`, `patsolve/castlesolver.cpp`) — **fait** (commit « Château »)
 3. Normandie (Normandy : `normandy.cpp`, `patsolve/normandysolver.cpp`) — **fait** (commit « Normandie »)
-4. Bizilizi (et variantes : `bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) — à faire
+4. Bizilizi (et variantes : `bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) — **fait** (commit « Bizilizi »)
 
 Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --apps
 packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
 (`gh run list -R packarch/myrepo`), installer.
 
-Étape en cours : Bizilizi (`bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) : lecture des sources.
+Étape en cours : publication 2.2.0 (version, tag, PKGBUILD, construction, myrepo, Pages, installation).
 
 ## Architecture : où brancher un nouveau jeu
 
@@ -66,7 +67,7 @@ packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier Git
 - `main.rs` : `--deal N --<jeu>` et `--solve-<jeu> DÉBUT FIN` pour tester.
 - `patsolve.rs` : moteur `patsolve` générique (trait `Position`) pour les solveurs de
   KPatience qui en dérivent (Klondike, Horloge, Yukon, Grand-père, Mod3, Quarante & Huit,
-  Normandie ; à réutiliser pour Bizilizi), et `Piles<N, C>`, le
+  Normandie, Bizilizi), et `Piles<N, C>`, le
   stockage compact (sans allocation) de N piles et C cartes (52 par défaut).
 
 ## Prochaines étapes possibles
@@ -79,13 +80,13 @@ packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier Git
      (élagage, heuristique) plutôt qu'une limite plus haute ;
    - Mod3 : 245 Mo au pic avec 1 million de positions (état de 138 octets, talon compris) ;
      compacter le talon (son ordre est fixe : un compteur suffit) le réduirait nettement.
-2. Autres jeux de KPatience pas encore portés (voir « Chantier en cours ») : Normandie, Château (Castle), Treize à la
-   douzaine (Baker's Dozen), Bizilizi.
+2. Tous les jeux de KPatience sont portés (11 novembre 2026). Non portées : les aides
+   « Pool Analysis » et « Delayed Hints » de Bizilizi.
 
 ## Comment vérifier
 
 ```sh
-cargo build --release && cargo test --release          # 90 tests
+cargo build --release && cargo test --release          # 95 tests
 ./target/release/packarch-spider --solve 2 1 30       # Spider
 ./target/release/packarch-spider --solve-freecell 3 1 100
 ./target/release/packarch-spider --solve-klondike 1 1 100
