@@ -53,7 +53,8 @@ Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --ap
 packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
 (`gh run list -R packarch/myrepo`), installer.
 
-Étape en cours : publication 2.2.0 (demandée le 11 novembre 2026).
+Étape en cours : aucune. Version 2.2.0 publiée le 11 novembre 2026 (tag, paquet dans myrepo,
+GitHub Pages, installée sur le poste de l'utilisateur).
 
 ## Architecture : où brancher un nouveau jeu
 
