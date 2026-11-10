@@ -16,7 +16,7 @@ use crate::cards::{self, Card};
 use crate::freecell::{self, Build, EmptyFill};
 use crate::spider::{self, ROWS};
 use crate::storage::{self, SavedState, Settings, Stats};
-use crate::{clock, golf, grandf, klondike, mod3, simon, yukon};
+use crate::{aces, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
 
 const APP_NAME: &str = "Packarch Spider";
 /// Écart horizontal entre colonnes du Spider, en largeurs de carte (comme KPatience).
@@ -308,6 +308,8 @@ impl Layout {
             AnyGame::Yukon(g) => Layout::yukon(rect, ratio, g),
             AnyGame::Grandfather(g) => Layout::grandfather(rect, ratio, g),
             AnyGame::Mod3(g) => Layout::mod3(rect, ratio, g),
+            AnyGame::AcesUp(g) => Layout::aces(rect, ratio, g),
+            AnyGame::FortyEight(g) => Layout::fortyeight(rect, ratio, g),
         }
     }
 
@@ -463,6 +465,110 @@ impl Layout {
             .collect();
         // KPatience distribue depuis le bas de l'écran.
         let deal_origin = Pos2::new(piles[0].origin.x, rect.bottom());
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `Fortyeight::initialize` : les 8 fondations en haut,
+    /// les 8 colonnes en dessous ; le talon en bas à droite (ancré au bas de
+    /// la scène dans KPatience), le rebut à sa gauche, étalé vers la gauche.
+    /// Positions en largeurs (x) et hauteurs (y) de carte.
+    fn fortyeight(rect: Rect, ratio: f32, game: &fortyeight::Game) -> Layout {
+        const DIST_X: f32 = 1.11;
+        const STORES_Y: f32 = 1.1;
+        const BOTTOM_PADDING: f32 = 1.75;
+        const WASTE_SPREAD: f32 = 0.21;
+        let width_units = 7.0 * DIST_X + 1.0;
+        let height_units = STORES_Y + 1.0 + BOTTOM_PADDING + LAYOUT_SPACING + 1.0;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0;
+        let y0 = rect.top() + LAYOUT_MARGIN * h;
+        // La rangée du talon au bas de la scène.
+        let row_y = (rect.bottom() - LAYOUT_MARGIN * h - h).max(y0 + (height_units - 1.0) * h);
+        let waste = game.piles[fortyeight::WASTE].len();
+        let room = 6.0 * DIST_X * w;
+        let gap = if waste > 1 { (WASTE_SPREAD * w).min(room / (waste - 1) as f32) } else { WASTE_SPREAD * w };
+        let piles: Vec<PileGeom> = (0..fortyeight::PILES)
+            .map(|i| {
+                let card = |x: f32, y: f32| Rect::from_min_size(Pos2::new(x, y), Vec2::new(w, h));
+                match i {
+                    0..fortyeight::STORES => {
+                        let origin = Pos2::new(x0 + DIST_X * i as f32 * w, y0 + STORES_Y * h);
+                        let avail = (row_y - LAYOUT_SPACING * h - origin.y - h).max(h * 0.5);
+                        PileGeom {
+                            origin,
+                            fan: Fan::Down,
+                            gaps: fan_gaps(&game.piles[i], h, avail),
+                            zone: Rect::from_min_max(origin, Pos2::new(origin.x + w, row_y - LAYOUT_SPACING * h)),
+                        }
+                    }
+                    fortyeight::WASTE => {
+                        let origin = Pos2::new(x0 + 6.0 * DIST_X * w, row_y);
+                        PileGeom {
+                            origin,
+                            fan: Fan::Right { n: usize::MAX, gap: -gap },
+                            gaps: (0.0, 0.0),
+                            zone: Rect::from_min_max(Pos2::new(x0, row_y), Pos2::new(origin.x + w, row_y + h)),
+                        }
+                    }
+                    fortyeight::TALON => {
+                        let origin = Pos2::new(x0 + 7.0 * DIST_X * w, row_y);
+                        PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: card(origin.x, origin.y) }
+                    }
+                    _ => {
+                        let origin = Pos2::new(x0 + DIST_X * (i - fortyeight::FOUNDATION) as f32 * w, y0);
+                        PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: card(origin.x, origin.y) }
+                    }
+                }
+            })
+            .collect();
+        // KPatience distribue les colonnes depuis 2 hauteurs de carte au-dessus.
+        let deal_origin = Pos2::new(piles[0].origin.x, piles[0].origin.y - 2.0 * h);
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `Idiot::initialize` : le talon à gauche, les 4
+    /// colonnes (étalées vers le bas), les cartes écartées à droite.
+    /// Positions en largeurs (x) et hauteurs (y) de carte.
+    fn aces(rect: Rect, ratio: f32, game: &aces::Game) -> Layout {
+        const DIST_X: f32 = 1.1;
+        const BOTTOM_PADDING: f32 = 2.0;
+        let mut units = [(0.0, 0.0); aces::PILES];
+        for (i, u) in units.iter_mut().enumerate().take(aces::STORES) {
+            *u = (1.5 + DIST_X * i as f32, 0.0);
+        }
+        units[aces::TALON] = (0.0, 0.0);
+        units[aces::AWAY] = (1.9 + DIST_X * 4.0, 0.0);
+        let width_units = 1.9 + DIST_X * 4.0 + 1.0;
+        let height_units = 1.0 + BOTTOM_PADDING;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0;
+        let y0 = rect.top() + LAYOUT_MARGIN * h;
+        let bottom = rect.bottom() - LAYOUT_MARGIN * h;
+        let piles: Vec<PileGeom> = units
+            .iter()
+            .enumerate()
+            .map(|(i, &(ux, uy))| {
+                let origin = Pos2::new(x0 + ux * w, y0 + uy * h);
+                if i < aces::STORES {
+                    let avail = (bottom - origin.y - h).max(h * 0.5);
+                    PileGeom {
+                        origin,
+                        fan: Fan::Down,
+                        gaps: fan_gaps(&game.piles[i], h, avail),
+                        zone: Rect::from_min_max(origin, Pos2::new(origin.x + w, rect.bottom().max(origin.y + h))),
+                    }
+                } else {
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+            })
+            .collect();
+        let deal_origin = piles[aces::TALON].origin;
         Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
     }
 
@@ -937,6 +1043,8 @@ fn new_game(settings: &Settings, deal: u32) -> AnyGame {
         GameKind::Yukon => AnyGame::Yukon(yukon::Game::new(deal)),
         GameKind::Grandfather => AnyGame::Grandfather(grandf::Game::new(deal)),
         GameKind::Mod3 => AnyGame::Mod3(mod3::Game::new(deal)),
+        GameKind::AcesUp => AnyGame::AcesUp(aces::Game::new(deal)),
+        GameKind::FortyEight => AnyGame::FortyEight(fortyeight::Game::new(deal)),
     }
 }
 
@@ -963,6 +1071,8 @@ fn apply_variant(settings: &mut Settings, variant: Variant) {
         Variant::Yukon => settings.game = GameKind::Yukon,
         Variant::Grandfather => settings.game = GameKind::Grandfather,
         Variant::Mod3 => settings.game = GameKind::Mod3,
+        Variant::AcesUp => settings.game = GameKind::AcesUp,
+        Variant::FortyEight => settings.game = GameKind::FortyEight,
     }
 }
 
@@ -1394,10 +1504,10 @@ impl SpiderApp {
         if pressed(ctx, Modifiers::NONE, Key::D) {
             self.toggle_demo();
         }
-        if pressed(ctx, Modifiers::NONE, Key::Enter) && matches!(self.game.kind(), GameKind::Spider | GameKind::Mod3) {
+        if pressed(ctx, Modifiers::NONE, Key::Enter) && matches!(self.game.kind(), GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp) {
             self.deal();
         }
-        if pressed(ctx, Modifiers::NONE, Key::Tab) && matches!(self.game.kind(), GameKind::Klondike | GameKind::Golf) {
+        if pressed(ctx, Modifiers::NONE, Key::Tab) && matches!(self.game.kind(), GameKind::Klondike | GameKind::Golf | GameKind::FortyEight) {
             self.deal();
         }
         if pressed(ctx, Modifiers::NONE, Key::R) && self.game.kind() == GameKind::Grandfather {
@@ -1452,7 +1562,7 @@ impl SpiderApp {
                     self.toggle_demo();
                 }
                 match self.game.kind() {
-                    GameKind::Spider | GameKind::Mod3 => {
+                    GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp => {
                         if ui
                             .add_enabled(self.game.can_deal(), egui::Button::new("Distribuer une rangée").shortcut_text("Entrée"))
                             .clicked()
@@ -1461,7 +1571,7 @@ impl SpiderApp {
                         }
                     }
                     GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon => {}
-                    GameKind::Klondike | GameKind::Golf => {
+                    GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                         if ui.add_enabled(self.game.can_deal(), egui::Button::new("Piocher").shortcut_text("Tab")).clicked() {
                             self.deal();
                         }
@@ -1481,7 +1591,7 @@ impl SpiderApp {
             ui.menu_button("Configuration", |ui| {
                 if !self.selecting && !matches!(
                         self.game.kind(),
-                        GameKind::Clock | GameKind::Simon | GameKind::Golf | GameKind::Yukon | GameKind::Grandfather | GameKind::Mod3
+                        GameKind::Clock | GameKind::Simon | GameKind::Golf | GameKind::Yukon | GameKind::Grandfather | GameKind::Mod3 | GameKind::AcesUp | GameKind::FortyEight
                     ) {
                     match &self.game {
                         AnyGame::Spider(_) => self.spider_options(ui),
@@ -1505,7 +1615,9 @@ impl SpiderApp {
                         | AnyGame::Golf(_)
                         | AnyGame::Yukon(_)
                         | AnyGame::Grandfather(_)
-                        | AnyGame::Mod3(_) => {}
+                        | AnyGame::Mod3(_)
+                        | AnyGame::AcesUp(_)
+                        | AnyGame::FortyEight(_) => {}
                     }
                     ui.separator();
                 }
@@ -1579,6 +1691,8 @@ impl SpiderApp {
                     GameKind::Yukon => "Règles du Yukon",
                     GameKind::Grandfather => "Règles de Grand-père",
                     GameKind::Mod3 => "Règles de Mod3",
+                    GameKind::AcesUp => "Règles des As",
+                    GameKind::FortyEight => "Règles de Quarante & Huit",
                 };
                 if ui.add(egui::Button::new(rules).shortcut_text("F1")).clicked() {
                     self.dialog = Dialog::Rules;
@@ -1703,7 +1817,7 @@ impl SpiderApp {
                 self.toggle_demo();
             }
             match self.game.kind() {
-                GameKind::Spider | GameKind::Mod3 => {
+                GameKind::Spider | GameKind::Mod3 | GameKind::AcesUp => {
                     if tool_button(ui, text, Icon::Deal, "Distribuer", "Distribuer une rangée (Entrée)", g && self.game.can_deal(), false)
                         .clicked()
                     {
@@ -1711,7 +1825,7 @@ impl SpiderApp {
                     }
                 }
                 GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon => {}
-                GameKind::Klondike | GameKind::Golf => {
+                GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                     if tool_button(ui, text, Icon::Draw, "Piocher", "Piocher (Tab)", g && self.game.can_deal(), false).clicked() {
                         self.deal();
                     }
@@ -1866,7 +1980,7 @@ impl SpiderApp {
                     .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
                     .show(ctx, |ui| {
                         ui.heading(format!("{APP_NAME} {}", env!("CARGO_PKG_VERSION")));
-                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père et Mod3.");
+                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As et Quarante & Huit.");
                         ui.add_space(6.0);
                         ui.label("Portage en Rust de jeux de KPatience, le jeu de patience du projet KDE.");
                         ui.hyperlink_to("KPatience", "https://apps.kde.org/kpat");
@@ -1894,6 +2008,8 @@ impl SpiderApp {
                     GameKind::Yukon => ("Règles du Yukon", RULES_YUKON),
                     GameKind::Grandfather => ("Règles de Grand-père", RULES_GRANDFATHER),
                     GameKind::Mod3 => ("Règles de Mod3", RULES_MOD3),
+                    GameKind::AcesUp => ("Règles des As", RULES_ACES_UP),
+                    GameKind::FortyEight => ("Règles de Quarante & Huit", RULES_FORTY_EIGHT),
                 };
                 egui::Window::new(title)
                     .collapsible(false)
@@ -2176,7 +2292,7 @@ impl SpiderApp {
             }
             return;
         }
-        // Klondike et Golf : un clic sur le talon (ou sa place vide) pioche,
+        // Klondike, Golf, Mod3 et les As : un clic sur le talon (ou sa place vide) pioche,
         // même en double-clic.
         let on_klondike_stock = |p: Pos2| self.game.stock_pile().is_some_and(|sp| layout.slot_rect(sp).contains(p));
         if response.clicked() || response.double_clicked() {
@@ -2196,9 +2312,9 @@ impl SpiderApp {
         } else if response.clicked() {
             if let Some(p) = response.interact_pointer_pos() {
                 let hit = self.hit(draw, layout, p);
-                // Golf : un clic joue la carte (`tryAutomaticMove`).
-                if let (AnyGame::Golf(g), Some(Place::Pile(pile, i))) = (&self.game, hit)
-                    && let Some(m) = g.auto_move(pile, i)
+                // Golf et les As : un clic joue la carte (`tryAutomaticMove`).
+                if let (AnyGame::Golf(_) | AnyGame::AcesUp(_), Some(Place::Pile(pile, i))) = (&self.game, hit)
+                    && let Some(m) = self.game.auto_move(pile, i)
                 {
                     self.play(m);
                     return;
@@ -2270,13 +2386,15 @@ fn variant_combo(ui: &mut egui::Ui, id: &str, variant: &mut Variant) {
 
 /// Les jeux de l'écran de choix, dans l'ordre alphabétique (comme
 /// KPatience), avec leur aperçu (`previews/` de KPatience).
-const GAMES: [(GameKind, &str, &[u8]); 9] = [
+const GAMES: [(GameKind, &str, &[u8]); 11] = [
     (GameKind::FreeCell, "FreeCell", include_bytes!("../data/previews/freecell.png")),
     (GameKind::Golf, "Golf", include_bytes!("../data/previews/golf.png")),
     (GameKind::Grandfather, "Grand-père", include_bytes!("../data/previews/grandf.png")),
     (GameKind::Klondike, "Klondike", include_bytes!("../data/previews/klondike.png")),
+    (GameKind::AcesUp, "Les as", include_bytes!("../data/previews/aces.png")),
     (GameKind::Clock, "L'horloge du grand-père", include_bytes!("../data/previews/clock.png")),
     (GameKind::Mod3, "Mod3", include_bytes!("../data/previews/mod3.png")),
+    (GameKind::FortyEight, "Quarante & Huit", include_bytes!("../data/previews/fortyeight.png")),
     (GameKind::Simon, "Simon le simple", include_bytes!("../data/previews/simon.png")),
     (GameKind::Spider, "Spider", include_bytes!("../data/previews/spider.png")),
     (GameKind::Yukon, "Yukon", include_bytes!("../data/previews/yukon.png")),
@@ -2851,6 +2969,37 @@ tout seuls (dépôt automatique).
 • « Distribuer » (Entrée, ou un clic sur le talon) pose une carte sur chaque pile de la \
 réserve.
 • Double-cliquez sur une carte pour l'envoyer sur une fondation qui la prend.
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups utiles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_ACES_UP: &str = "\
+But : écarter toutes les cartes sauf les 4 As, qui doivent finir seuls, un par colonne.
+
+• Au départ, une carte sur chacune des 4 colonnes ; le reste forme le talon, à gauche.
+• Une carte du dessus d'une colonne peut être écartée si une autre colonne montre une \
+carte plus haute de la même couleur. L'As est la carte la plus haute.
+• Une colonne vide reçoit la carte du dessus de n'importe quelle autre colonne.
+• « Distribuer » (Entrée, ou un clic sur le talon) pose une carte sur chaque colonne.
+• Un clic sur une carte l'écarte si elle peut l'être, sinon l'envoie sur une colonne vide.
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups possibles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_FORTY_EIGHT: &str = "\
+But : monter les 104 cartes (2 jeux) sur les 8 fondations, de l'As au Roi dans la même couleur.
+
+• Au départ, 8 colonnes de 4 cartes visibles ; le reste forme le talon, en bas à droite.
+• Sur une colonne, on descend dans la même couleur. Une colonne vide reçoit n'importe quelle \
+carte.
+• Une suite de même couleur se déplace d'un bloc : 1 carte sans colonne vide, 2 avec une, \
+4 avec deux, 8 avec trois… (la colonne d'arrivée, si elle est vide, ne compte pas).
+• « Piocher » (Tab, ou un clic sur le talon) retourne une carte sur le rebut ; seule celle \
+du dessus se joue. Talon vide, le rebut se retourne en talon, une seule fois.
+• Les cartes qui peuvent aller sur une fondation y vont toutes seules (dépôt automatique).
+• Double-cliquez sur une carte pour l'envoyer sur une fondation ou une colonne qui la prend.
 
 Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
 gagnant ; sinon, les coups utiles.

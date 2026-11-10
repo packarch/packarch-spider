@@ -146,6 +146,10 @@ pub struct Stats {
     pub grandfather: VariantStats,
     /// Mod3.
     pub mod3: VariantStats,
+    /// Les as.
+    pub aces_up: VariantStats,
+    /// Quarante & Huit.
+    pub forty_eight: VariantStats,
 }
 
 impl Stats {
@@ -168,6 +172,8 @@ impl Stats {
             Variant::Yukon => &self.yukon,
             Variant::Grandfather => &self.grandfather,
             Variant::Mod3 => &self.mod3,
+            Variant::AcesUp => &self.aces_up,
+            Variant::FortyEight => &self.forty_eight,
         }
     }
 
@@ -182,6 +188,8 @@ impl Stats {
             Variant::Yukon => &mut self.yukon,
             Variant::Grandfather => &mut self.grandfather,
             Variant::Mod3 => &mut self.mod3,
+            Variant::AcesUp => &mut self.aces_up,
+            Variant::FortyEight => &mut self.forty_eight,
         }
     }
 

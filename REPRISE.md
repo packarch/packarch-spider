@@ -1,11 +1,13 @@
 # Où en est le portage (notes de reprise)
 
-Dernière mise à jour : 9 novembre 2026 (soir).
+Dernière mise à jour : 10 novembre 2026 (soir).
 
 Projet : `packarch-spider`, portage en Rust (egui) des jeux de KPatience. Les sources C++
-de référence sont dans `~/Documents/develop/kpat` (fork Packarch Spider, C++/Qt).
+de référence sont dans `/mnt/ssd/dev/kpat` (fork Packarch Spider, C++/Qt ; aussi au tag `v1.0.1`
+de ce dépôt).
 
-Publié le 10 novembre 2026 dans le dépôt `packarch/packarch-spider` (version 2.0.0), à la place
+Publié le 10 novembre 2026 dans le dépôt `packarch/packarch-spider` (version 2.0.0, puis 2.1.0 avec
+les As et Quarante & Huit), à la place
 de la version C++ (jusqu'à `v1.0.1`).
 
 ## Jeux portés
@@ -20,13 +22,16 @@ de la version C++ (jusqu'à `v1.0.1`).
 | Golf | `golf.rs` | `golf_solver.rs`, **maison** (KPat utilise black-hole-solver) : recherche exhaustive, position en 30 bits | 463/1000 gagnées, 537 perdues (prouvé), 0 indéterminée ; ≈ 24 ms/donne, 0,16 s au pire ; identique à KPat sur les 885 donnes qu'il tranche |
 | Yukon | `yukon.rs` | `yukon_solver.rs`, portage de `YukonSolver` sur `patsolve.rs` (état compact `Piles<7>`) | 727/1000 gagnées, 47 perdues, 226 indéterminées (limite 1 million de positions) ; ≈ 0,15 s/donne, 1 s au pire ; KPat 714/45/241, jamais contredit |
 | Grand-père | `grandf.rs` | `grandf_solver.rs`, portage de `GrandfSolver` sur `patsolve.rs` (redistribution = coup, historique haché dans la clé comme KPat) | 997/1000 gagnées, 2 perdues, 1 indéterminée ; 5 s pour les 1000 ; **identique à KPat sur les 1000** |
+| Les as (Aces Up) | `aces.rs` | `aces_solver.rs`, **maison** (`IdiotSolver` de KPat est faux : sa distribution ne pose pas les cartes, et écarter d'office n'est pas sûr, donne 34). Deux passes : tout écarter d'office (rapide, solutions justes), puis recherche exhaustive où seul l'écart d'une carte inutile est forcé (plus basses de sa couleur écartées, ou talon vide) ; vérifié contre une recherche sans écart forcé (`forced_discard_is_safe`, 45 donnes tranchées sur 100, 95 s) | 508/1000 gagnées, 108 perdues (prouvé), 384 indéterminées (limite 5 millions) ; 254 s pour les 1000, 1,1 s au pire, 213 Mo au pic. Piste : un meilleur critère d'écart sans risque réduirait les indéterminées |
+| Quarante & Huit (Forty & Eight) | `fortyeight.rs` | `fortyeight_solver.rs`, portage de `FortyeightSolver` sur `patsolve.rs` (`Piles<10, 104>`), **corrigé** : sorties (l'original ne sort jamais le second As d'une couleur), rebut retourné en un coup distinct de la pioche | 929/1000 gagnées, 0 perdue, 71 indéterminées (limite 1 million) ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic |
 | Mod3 | `mod3.rs` | `mod3_solver.rs`, portage de `Mod3Solver` sur `patsolve.rs` (`Piles<34, 104>`) | 747/1000 gagnées, 19 perdues, 234 indéterminées ; ≈ 0,5 s/donne, 2,6 s au pire, **245 Mo au pic** ; KPat 541/18/441, jamais contredit |
 
 Aussi fait :
 - écran de choix du jeu comme `GameSelectionScene` de KPatience (Nouvelle partie… Ctrl+Maj+N),
   au lancement s'il n'y a pas de partie gardée ;
-- dépôt automatique (FreeCell, Klondike, Simon, Golf, Yukon, Grand-père, Mod3), bouton Déposer (P), Piocher
-  (Tab, Klondike et Golf), Redistribuer (R, Grand-père), Distribuer (Entrée, Spider et Mod3) ;
+- un clic joue la carte au Golf et aux As (`tryAutomaticMove`) ;
+- dépôt automatique (FreeCell, Klondike, Simon, Golf, Yukon, Grand-père, Mod3, Quarante & Huit), bouton Déposer (P), Piocher
+  (Tab, Klondike, Golf et Quarante & Huit), Redistribuer (R, Grand-père), Distribuer (Entrée, Spider, Mod3 et les As) ;
 - noms complets dans le titre et les statistiques (« FreeCell (Baker's Game) »…).
 
 ## Architecture : où brancher un nouveau jeu
@@ -40,8 +45,8 @@ Aussi fait :
 - `storage.rs` : réglages et statistiques par variante.
 - `main.rs` : `--deal N --<jeu>` et `--solve-<jeu> DÉBUT FIN` pour tester.
 - `patsolve.rs` : moteur `patsolve` générique (trait `Position`) pour les solveurs de
-  KPatience qui en dérivent (Klondike, Horloge, Yukon, Grand-père, Mod3 ; à réutiliser pour
-  Quarante et huit, Normandie, Château, Bizilizi, Les as…), et `Piles<N, C>`, le
+  KPatience qui en dérivent (Klondike, Horloge, Yukon, Grand-père, Mod3, Quarante & Huit ; à
+  réutiliser pour Normandie, Château, Bizilizi…), et `Piles<N, C>`, le
   stockage compact (sans allocation) de N piles et C cartes (52 par défaut).
 
 ## Prochaines étapes possibles
@@ -54,13 +59,13 @@ Aussi fait :
      (élagage, heuristique) plutôt qu'une limite plus haute ;
    - Mod3 : 245 Mo au pic avec 1 million de positions (état de 138 octets, talon compris) ;
      compacter le talon (son ordre est fixe : un compteur suffit) le réduirait nettement.
-2. Autres jeux de KPatience pas encore portés : Les as (Aces Up), Quarante et huit, Normandie, Château (Castle), Treize à la
+2. Autres jeux de KPatience pas encore portés : Normandie, Château (Castle), Treize à la
    douzaine (Baker's Dozen), Bizilizi.
 
 ## Comment vérifier
 
 ```sh
-cargo build --release && cargo test --release          # 61 tests
+cargo build --release && cargo test --release          # 75 tests
 ./target/release/packarch-spider --solve 2 1 30       # Spider
 ./target/release/packarch-spider --solve-freecell 3 1 100
 ./target/release/packarch-spider --solve-klondike 1 1 100
@@ -70,6 +75,8 @@ cargo build --release && cargo test --release          # 61 tests
 ./target/release/packarch-spider --solve-yukon 1 100
 ./target/release/packarch-spider --solve-grandfather 1 100
 ./target/release/packarch-spider --solve-mod3 1 100
+./target/release/packarch-spider --solve-aces-up 1 1000
+./target/release/packarch-spider --solve-forty-eight 1 100
 cargo test --release -- --ignored                       # vérifications exhaustives (≈ 4 min)
 ```
 

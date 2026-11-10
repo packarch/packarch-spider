@@ -1,7 +1,7 @@
 # packarch-spider
 
 Le **Spider**, le **FreeCell**, le **Klondike**, **l'horloge du grand-père**, **Simon le simple**, le
-**Golf**, le **Yukon**, **Grand-père** et **Mod3** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
+**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As** et **Quarante & Huit** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
 pour [Packarch](https://github.com/packarch/CachyOS-Packarch).
 
 C'est un portage de jeux de [KPatience](https://apps.kde.org/kpat/) (KDE), dont il reprend
@@ -143,6 +143,37 @@ flèches et Entrée) ; **Nouvelle donne** (Ctrl+N) redistribue le même jeu.
   2,6 s au pire, 245 Mo au pic). KPatience, avec une limite plus basse : 541 / 18 / 441 ;
   aucune donne tranchée différemment.
 
+## Les As
+
+- Les règles de KPatience (Aces Up) : 4 colonnes d'une carte, le reste au talon ; la carte du
+  dessus d'une colonne est écartée si une autre colonne montre une carte plus haute de la
+  même couleur (l'As est la plus haute) ; une colonne vide reçoit la carte du dessus de
+  n'importe quelle autre ; **Distribuer** (Entrée, ou un clic sur le talon) pose une carte sur
+  chaque colonne ; gagné quand il ne reste que les 4 As, un par colonne ;
+- un clic sur une carte de colonne la joue (comme dans KPatience) ;
+- **outil de résolution** : celui de KPatience (`IdiotSolver`) ne pose pas les cartes
+  distribuées sur les colonnes, et il écarte d'office toute carte qui peut l'être, ce qui
+  peut perdre une partie gagnable (donne 34 : il faut garder une carte pour battre plus tard
+  une carte plus basse de sa couleur). Celui-ci est écrit pour ce portage : une recherche
+  rapide qui écarte tout d'office, puis, si elle échoue, une recherche exhaustive où seul
+  l'écart d'une carte devenue inutile est forcé (comparée à une recherche sans écart forcé).
+  Sur les donnes 1 à 1000 : 508 gagnées, 108 perdues (prouvé), 384 indéterminées (limite de
+  5 millions de positions ; 1,1 s au pire, 213 Mo au pic).
+
+## Quarante & Huit
+
+- Les règles de KPatience (Forty & Eight) : 104 cartes (2 jeux), 8 colonnes de 4 cartes
+  visibles, 8 fondations de l'As au Roi dans la même couleur ; on descend dans la même
+  couleur, une colonne vide reçoit n'importe quelle carte ; une suite de même couleur se
+  déplace d'un bloc jusqu'à 2^(colonnes vides) cartes ; **Piocher** (Tab, ou un clic sur le
+  talon) retourne une carte sur le rebut, qui se retourne en talon une seule fois ; toute
+  carte qui peut sortir sort toute seule (dépôt automatique, comme KPatience) ;
+- **outil de résolution** : portage de `FortyeightSolver` de KPatience sur le moteur
+  `patsolve` (mêmes priorités et élagages), corrigé : l'original choisit mal la fondation
+  d'un As (le second As d'une couleur ne sort jamais) et retourne le rebut en piochant dans
+  le même coup. Sur les donnes 1 à 1000 : 929 gagnées, 0 perdue, 71 indéterminées (limite
+  d'un million de positions ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic).
+
 ## Compilation
 
 ```sh
@@ -166,6 +197,10 @@ cargo build --release
 ./target/release/packarch-spider --solve-grandfather 1 100 # idem à Grand-père
 ./target/release/packarch-spider --deal 42 --mod3   # Mod3, donne n° 42
 ./target/release/packarch-spider --solve-mod3 1 100 # idem à Mod3
+./target/release/packarch-spider --deal 42 --aces-up # les As, donne n° 42
+./target/release/packarch-spider --solve-aces-up 1 100 # idem aux As
+./target/release/packarch-spider --deal 42 --forty-eight # Quarante & Huit, donne n° 42
+./target/release/packarch-spider --solve-forty-eight 1 100 # idem à Quarante & Huit
 cargo test --release
 ```
 
@@ -202,7 +237,7 @@ done
 - `src/freecell_solver.rs` : outil de résolution du FreeCell ;
 - `src/klondike.rs` : règles du Klondike ;
 - `src/patsolve.rs` : le moteur de recherche `patsolve` de KPatience, commun au Klondike, à l'horloge, au
-  Yukon, à Grand-père et à Mod3, et le stockage compact de leurs piles (`Piles`) ;
+  Yukon, à Grand-père, à Mod3 et à Quarante & Huit, et le stockage compact de leurs piles (`Piles`) ;
 - `src/klondike_solver.rs` : outil de résolution du Klondike, portage de `KlondikeSolver` ;
 - `src/clock.rs` : règles de l'horloge du grand-père ;
 - `src/clock_solver.rs` : son outil de résolution, portage de `ClockSolver` ;
@@ -216,6 +251,10 @@ done
 - `src/grandf_solver.rs` : son outil de résolution, portage de `GrandfSolver` ;
 - `src/mod3.rs` : règles de Mod3 ;
 - `src/mod3_solver.rs` : son outil de résolution, portage de `Mod3Solver` ;
+- `src/aces.rs` : règles des As ;
+- `src/aces_solver.rs` : son outil de résolution ;
+- `src/fortyeight.rs` : règles de Quarante & Huit ;
+- `src/fortyeight_solver.rs` : son outil de résolution, portage corrigé de `FortyeightSolver` ;
 - `src/assets.rs` : jeux de cartes et thèmes SVG (rendus avec resvg) ;
 - `src/storage.rs` : réglages, statistiques, partie en cours ;
 - `src/app.rs` : interface.
@@ -224,5 +263,5 @@ done
 
 GPL-2.0-or-later (`COPYING`). D'après KPatience : © 1995 Paul Olav Tvete, © 2000 Stephan Kulow,
 Josh Metzler (Spider), Stephan Kulow (outil de résolution du Spider), Rodolfo Borges, Stephan
-Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
+Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
 libkdegames et KPatience (licences dans `data/carddecks/*`).

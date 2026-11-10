@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::cards::Card;
 use crate::freecell::{self, Code};
-use crate::{clock, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
+use crate::{aces, aces_solver, clock, fortyeight, fortyeight_solver, clock_solver, freecell_solver, golf, golf_solver, grandf, grandf_solver, klondike, klondike_solver, mod3, mod3_solver, simon, simon_solver, spider, spider_solver, yukon, yukon_solver};
 
 /// Un coup du joueur (ou du solveur).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
@@ -43,6 +43,8 @@ pub enum GameKind {
     Yukon,
     Grandfather,
     Mod3,
+    AcesUp,
+    FortyEight,
 }
 
 /// Une variante, pour les statistiques et les donnes numérotées : le Spider
@@ -59,10 +61,12 @@ pub enum Variant {
     Yukon,
     Grandfather,
     Mod3,
+    AcesUp,
+    FortyEight,
 }
 
 impl Variant {
-    pub const ALL: [Variant; 18] = [
+    pub const ALL: [Variant; 20] = [
         Variant::Klondike(1),
         Variant::Klondike(3),
         Variant::Spider(1),
@@ -81,6 +85,8 @@ impl Variant {
         Variant::Yukon,
         Variant::Grandfather,
         Variant::Mod3,
+        Variant::AcesUp,
+        Variant::FortyEight,
     ];
 
     pub fn name(self) -> String {
@@ -95,6 +101,8 @@ impl Variant {
             Variant::Yukon => "Yukon".into(),
             Variant::Grandfather => "Grand-père".into(),
             Variant::Mod3 => "Mod3".into(),
+            Variant::AcesUp => "Les as".into(),
+            Variant::FortyEight => "Quarante & Huit".into(),
         }
     }
 }
@@ -125,6 +133,8 @@ pub enum AnyGame {
     Yukon(yukon::Game),
     Grandfather(grandf::Game),
     Mod3(mod3::Game),
+    AcesUp(aces::Game),
+    FortyEight(fortyeight::Game),
 }
 
 impl AnyGame {
@@ -139,6 +149,8 @@ impl AnyGame {
             AnyGame::Yukon(_) => GameKind::Yukon,
             AnyGame::Grandfather(_) => GameKind::Grandfather,
             AnyGame::Mod3(_) => GameKind::Mod3,
+            AnyGame::AcesUp(_) => GameKind::AcesUp,
+            AnyGame::FortyEight(_) => GameKind::FortyEight,
         }
     }
 
@@ -153,6 +165,8 @@ impl AnyGame {
             AnyGame::Yukon(_) => Variant::Yukon,
             AnyGame::Grandfather(_) => Variant::Grandfather,
             AnyGame::Mod3(_) => Variant::Mod3,
+            AnyGame::AcesUp(_) => Variant::AcesUp,
+            AnyGame::FortyEight(_) => Variant::FortyEight,
         }
     }
 
@@ -160,7 +174,7 @@ impl AnyGame {
         match self {
             AnyGame::Spider(g) => format!("Spider ({} couleur{})", g.suit_count, if g.suit_count > 1 { "s" } else { "" }),
             AnyGame::FreeCell(g) => g.options.name().into(),
-            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) => self.variant().name(),
+            AnyGame::Klondike(_) | AnyGame::Clock(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::AcesUp(_) | AnyGame::FortyEight(_) => self.variant().name(),
         }
     }
 
@@ -176,6 +190,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => AnyGame::Yukon(yukon::Game::new(g.deal_number)),
             AnyGame::Grandfather(g) => AnyGame::Grandfather(grandf::Game::new(g.deal_number)),
             AnyGame::Mod3(g) => AnyGame::Mod3(mod3::Game::new(g.deal_number)),
+            AnyGame::AcesUp(g) => AnyGame::AcesUp(aces::Game::new(g.deal_number)),
+            AnyGame::FortyEight(g) => AnyGame::FortyEight(fortyeight::Game::new(g.deal_number)),
         }
     }
 
@@ -190,6 +206,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.deal_number,
             AnyGame::Grandfather(g) => g.deal_number,
             AnyGame::Mod3(g) => g.deal_number,
+            AnyGame::AcesUp(g) => g.deal_number,
+            AnyGame::FortyEight(g) => g.deal_number,
         }
     }
 
@@ -204,6 +222,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.moves,
             AnyGame::Grandfather(g) => g.moves,
             AnyGame::Mod3(g) => g.moves,
+            AnyGame::AcesUp(g) => g.moves,
+            AnyGame::FortyEight(g) => g.moves,
         }
     }
 
@@ -218,6 +238,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.is_won(),
             AnyGame::Grandfather(g) => g.is_won(),
             AnyGame::Mod3(g) => g.is_won(),
+            AnyGame::AcesUp(g) => g.is_won(),
+            AnyGame::FortyEight(g) => g.is_won(),
         }
     }
 
@@ -232,6 +254,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.can_undo(),
             AnyGame::Grandfather(g) => g.can_undo(),
             AnyGame::Mod3(g) => g.can_undo(),
+            AnyGame::AcesUp(g) => g.can_undo(),
+            AnyGame::FortyEight(g) => g.can_undo(),
         }
     }
 
@@ -246,6 +270,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.can_redo(),
             AnyGame::Grandfather(g) => g.can_redo(),
             AnyGame::Mod3(g) => g.can_redo(),
+            AnyGame::AcesUp(g) => g.can_redo(),
+            AnyGame::FortyEight(g) => g.can_redo(),
         }
     }
 
@@ -260,6 +286,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.undo(),
             AnyGame::Grandfather(g) => g.undo(),
             AnyGame::Mod3(g) => g.undo(),
+            AnyGame::AcesUp(g) => g.undo(),
+            AnyGame::FortyEight(g) => g.undo(),
         }
     }
 
@@ -274,6 +302,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.redo(),
             AnyGame::Grandfather(g) => g.redo(),
             AnyGame::Mod3(g) => g.redo(),
+            AnyGame::AcesUp(g) => g.redo(),
+            AnyGame::FortyEight(g) => g.redo(),
         }
     }
 
@@ -288,13 +318,15 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.play(m),
             AnyGame::Grandfather(g) => g.play(m),
             AnyGame::Mod3(g) => g.play(m),
+            AnyGame::AcesUp(g) => g.play(m),
+            AnyGame::FortyEight(g) => g.play(m),
         }
     }
 
     /// Spider : reste-t-il des rangées à distribuer ? Klondike : peut-on
     /// piocher (ou retourner la pioche) ? Golf : reste-t-il un talon ?
-    /// Grand-père : reste-t-il une redistribution ? Mod3 : reste-t-il un
-    /// talon ?
+    /// Grand-père : reste-t-il une redistribution ? Mod3 et les As :
+    /// reste-t-il un talon ?
     pub fn can_deal(&self) -> bool {
         match self {
             AnyGame::Spider(g) => !g.stock.is_empty(),
@@ -303,16 +335,20 @@ impl AnyGame {
             AnyGame::Golf(g) => g.can_draw(),
             AnyGame::Grandfather(g) => g.can_redeal(),
             AnyGame::Mod3(g) => g.can_deal(),
+            AnyGame::AcesUp(g) => g.can_deal(),
+            AnyGame::FortyEight(g) => g.can_deal(),
         }
     }
 
-    /// Klondike, Golf et Mod3 : la pile du talon (un clic dessus pioche ou
+    /// Klondike, Golf, Mod3 et les As : la pile du talon (un clic dessus pioche ou
     /// distribue).
     pub fn stock_pile(&self) -> Option<usize> {
         match self {
             AnyGame::Klondike(_) => Some(klondike::STOCK),
             AnyGame::Golf(_) => Some(golf::TALON),
             AnyGame::Mod3(_) => Some(mod3::TALON),
+            AnyGame::AcesUp(_) => Some(aces::TALON),
+            AnyGame::FortyEight(_) => Some(fortyeight::TALON),
             _ => None,
         }
     }
@@ -331,6 +367,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.piles.len(),
             AnyGame::Grandfather(g) => g.piles.len(),
             AnyGame::Mod3(g) => g.piles.len(),
+            AnyGame::AcesUp(g) => g.piles.len(),
+            AnyGame::FortyEight(g) => g.piles.len(),
         }
     }
 
@@ -345,6 +383,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => &g.piles[p],
             AnyGame::Grandfather(g) => &g.piles[p],
             AnyGame::Mod3(g) => &g.piles[p],
+            AnyGame::AcesUp(g) => &g.piles[p],
+            AnyGame::FortyEight(g) => &g.piles[p],
         }
     }
 
@@ -378,6 +418,17 @@ impl AnyGame {
             AnyGame::Mod3(_) if (mod3::RESERVE..mod3::ACES).contains(&p) => PileKind::Tableau,
             AnyGame::Mod3(_) if p == mod3::TALON => PileKind::Stock,
             AnyGame::Mod3(_) => PileKind::Foundation,
+            AnyGame::AcesUp(_) => match p {
+                0..aces::STORES => PileKind::Tableau,
+                aces::AWAY => PileKind::Foundation,
+                _ => PileKind::Stock,
+            },
+            AnyGame::FortyEight(_) => match p {
+                0..fortyeight::STORES => PileKind::Tableau,
+                fortyeight::WASTE => PileKind::Waste,
+                fortyeight::TALON => PileKind::Stock,
+                _ => PileKind::Foundation,
+            },
         }
     }
 
@@ -392,6 +443,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.can_pick(p, index),
             AnyGame::Grandfather(g) => g.can_pick(p, index),
             AnyGame::Mod3(g) => g.can_pick(p, index),
+            AnyGame::AcesUp(g) => g.can_pick(p, index),
+            AnyGame::FortyEight(g) => g.can_pick(p, index),
         }
     }
 
@@ -407,6 +460,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.is_legal(m),
             AnyGame::Grandfather(g) => g.is_legal(m),
             AnyGame::Mod3(g) => g.is_legal(m),
+            AnyGame::AcesUp(g) => g.is_legal(m),
+            AnyGame::FortyEight(g) => g.is_legal(m),
         }
     }
 
@@ -422,6 +477,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.auto_move(p, index),
             AnyGame::Grandfather(g) => g.auto_move(p, index),
             AnyGame::Mod3(g) => g.auto_move(p, index),
+            AnyGame::AcesUp(g) => g.auto_move(p, index),
+            AnyGame::FortyEight(g) => g.auto_move(p, index),
         }
     }
 
@@ -436,6 +493,8 @@ impl AnyGame {
             AnyGame::Yukon(g) => yukon_solver::useful_moves(g),
             AnyGame::Grandfather(g) => grandf_solver::useful_moves(g),
             AnyGame::Mod3(g) => mod3_solver::useful_moves(g),
+            AnyGame::AcesUp(g) => g.sensible_moves(),
+            AnyGame::FortyEight(g) => fortyeight_solver::useful_moves(g),
         }
     }
 
@@ -452,6 +511,9 @@ impl AnyGame {
             AnyGame::Yukon(g) => g.autodrop(),
             AnyGame::Grandfather(g) => g.autodrop(),
             AnyGame::Mod3(g) => g.autodrop(),
+            // `Idiot::drop` : pas de dépôt automatique.
+            AnyGame::AcesUp(_) => None,
+            AnyGame::FortyEight(g) => g.autodrop(),
         }
     }
 
@@ -462,7 +524,7 @@ impl AnyGame {
     }
 
     pub fn uses_autodrop(&self) -> bool {
-        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_))
+        matches!(self, AnyGame::FreeCell(_) | AnyGame::Klondike(_) | AnyGame::Simon(_) | AnyGame::Golf(_) | AnyGame::Yukon(_) | AnyGame::Grandfather(_) | AnyGame::Mod3(_) | AnyGame::FortyEight(_))
     }
 
     /// Clé de la position, pour garder les résultats du solveur.
@@ -533,6 +595,21 @@ impl AnyGame {
                     key.push(255);
                 }
             }
+            AnyGame::FortyEight(g) => {
+                key.push(11);
+                key.push(g.lastdeal as u8);
+                for p in &g.piles {
+                    key.extend(p.iter().map(|c| c.code()));
+                    key.push(255);
+                }
+            }
+            AnyGame::AcesUp(g) => {
+                key.push(10);
+                for p in &g.piles {
+                    key.extend(p.iter().map(|c| c.code()));
+                    key.push(255);
+                }
+            }
             AnyGame::Clock(g) => {
                 key.push(4);
                 for p in &g.piles {
@@ -564,6 +641,8 @@ pub fn solve(game: &AnyGame, stop: &AtomicBool) -> Outcome {
         AnyGame::Yukon(g) => yukon_solver::solve(g, stop),
         AnyGame::Grandfather(g) => grandf_solver::solve(g, stop),
         AnyGame::Mod3(g) => mod3_solver::solve(g, stop),
+        AnyGame::AcesUp(g) => aces_solver::solve(g, stop),
+        AnyGame::FortyEight(g) => fortyeight_solver::solve(g, stop),
     }
 }
 
@@ -585,6 +664,8 @@ mod tests {
             AnyGame::Yukon(yukon::Game::new(3)),
             AnyGame::Grandfather(grandf::Game::new(3)),
             AnyGame::Mod3(mod3::Game::new(3)),
+            AnyGame::AcesUp(aces::Game::new(3)),
+            AnyGame::FortyEight(fortyeight::Game::new(3)),
         ];
         for g in games {
             let json = serde_json::to_string(&g).unwrap();

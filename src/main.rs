@@ -1,12 +1,14 @@
 //! packarch-spider : le Spider, le FreeCell, le Klondike, l'horloge du
-//! grand-père, Simon le simple, le Golf, le Yukon, Grand-père et Mod3 de
-//! KPatience, en Rust (egui).
+//! grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As
+//! et Quarante & Huit de KPatience, en Rust (egui).
 //!
 //! Sans argument : la fenêtre du jeu.
 //! `--solve COULEURS DÉBUT FIN` et `--solve-freecell VARIANTE DÉBUT FIN` :
 //! passent les donnes DÉBUT à FIN dans l'outil de résolution (gagnable /
 //! perdue / indéterminée), pour les tests.
 
+mod aces;
+mod aces_solver;
 mod app;
 mod assets;
 mod board;
@@ -15,6 +17,8 @@ mod clock;
 mod clock_solver;
 mod freecell;
 mod freecell_solver;
+mod fortyeight;
+mod fortyeight_solver;
 mod golf;
 mod golf_solver;
 mod grandf;
@@ -54,6 +58,8 @@ Usage : packarch-spider [OPTION]
   --deal N --yukon                    lance le Yukon sur la donne N
   --deal N --grandfather              lance Grand-père sur la donne N
   --deal N --mod3                     lance Mod3 sur la donne N
+  --deal N --aces-up                  lance les As sur la donne N
+  --deal N --forty-eight              lance Quarante & Huit sur la donne N
   --solve-freecell VARIANTE DÉBUT FIN résout les donnes DÉBUT à FIN du FreeCell
   --solve-klondike PIOCHE DÉBUT FIN   résout les donnes DÉBUT à FIN du Klondike
   --solve-clock DÉBUT FIN             résout les donnes DÉBUT à FIN de l'horloge du grand-père
@@ -62,6 +68,8 @@ Usage : packarch-spider [OPTION]
   --solve-yukon DÉBUT FIN             résout les donnes DÉBUT à FIN du Yukon
   --solve-grandfather DÉBUT FIN       résout les donnes DÉBUT à FIN de Grand-père
   --solve-mod3 DÉBUT FIN              résout les donnes DÉBUT à FIN de Mod3
+  --solve-aces-up DÉBUT FIN           résout les donnes DÉBUT à FIN des As
+  --solve-forty-eight DÉBUT FIN       résout les donnes DÉBUT à FIN de Quarante & Huit
   -h, --help                          affiche cette aide
   -V, --version                       affiche la version";
 
@@ -80,6 +88,8 @@ fn solve_range(variant: Variant, start: u32, end: u32) {
             Variant::Yukon => board::AnyGame::Yukon(yukon::Game::new(deal)),
             Variant::Grandfather => board::AnyGame::Grandfather(grandf::Game::new(deal)),
             Variant::Mod3 => board::AnyGame::Mod3(mod3::Game::new(deal)),
+            Variant::AcesUp => board::AnyGame::AcesUp(aces::Game::new(deal)),
+            Variant::FortyEight => board::AnyGame::FortyEight(fortyeight::Game::new(deal)),
         };
         let t = Instant::now();
         let result = match board::solve(&g, &stop) {
@@ -189,6 +199,28 @@ fn main() -> ExitCode {
         },
         ["--deal", deal, "--yukon"] | ["--yukon", "--deal", deal] => match num(deal) {
             Some(d) if d >= 1 => start = Some((Some(Variant::Yukon), d)),
+            _ => return usage_error(),
+        },
+        ["--solve-forty-eight", first, last] => match (num(first), num(last)) {
+            (Some(x), Some(y)) if x >= 1 && x <= y => {
+                solve_range(Variant::FortyEight, x, y);
+                return ExitCode::SUCCESS;
+            }
+            _ => return usage_error(),
+        },
+        ["--deal", deal, "--forty-eight"] | ["--forty-eight", "--deal", deal] => match num(deal) {
+            Some(d) if d >= 1 => start = Some((Some(Variant::FortyEight), d)),
+            _ => return usage_error(),
+        },
+        ["--solve-aces-up", first, last] => match (num(first), num(last)) {
+            (Some(x), Some(y)) if x >= 1 && x <= y => {
+                solve_range(Variant::AcesUp, x, y);
+                return ExitCode::SUCCESS;
+            }
+            _ => return usage_error(),
+        },
+        ["--deal", deal, "--aces-up"] | ["--aces-up", "--deal", deal] => match num(deal) {
+            Some(d) if d >= 1 => start = Some((Some(Variant::AcesUp), d)),
             _ => return usage_error(),
         },
         ["--solve-golf", first, last] => match (num(first), num(last)) {

@@ -1,6 +1,6 @@
 [package]
 name = "packarch-spider"
-version = "2.0.0"
+version = "2.1.0"
 edition = "2024"
 description = "Patience card games for Packarch: Spider, FreeCell, Klondike, Golf... (Rust port of KPatience games)"
 license = "GPL-2.0-or-later"
