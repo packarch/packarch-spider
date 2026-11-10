@@ -25,6 +25,7 @@ de la version C++ (jusqu'à `v1.0.1`).
 | Les as (Aces Up) | `aces.rs` | `aces_solver.rs`, **maison** (`IdiotSolver` de KPat est faux : sa distribution ne pose pas les cartes, et écarter d'office n'est pas sûr, donne 34). Deux passes : tout écarter d'office (rapide, solutions justes), puis recherche exhaustive où seul l'écart d'une carte inutile est forcé (plus basses de sa couleur écartées, ou talon vide) ; vérifié contre une recherche sans écart forcé (`forced_discard_is_safe`, 45 donnes tranchées sur 100, 95 s) | 508/1000 gagnées, 108 perdues (prouvé), 384 indéterminées (limite 5 millions) ; 254 s pour les 1000, 1,1 s au pire, 213 Mo au pic. Piste : un meilleur critère d'écart sans risque réduirait les indéterminées |
 | Quarante & Huit (Forty & Eight) | `fortyeight.rs` | `fortyeight_solver.rs`, portage de `FortyeightSolver` sur `patsolve.rs` (`Piles<10, 104>`), **corrigé** : sorties (l'original ne sort jamais le second As d'une couleur), rebut retourné en un coup distinct de la pioche | 929/1000 gagnées, 0 perdue, 71 indéterminées (limite 1 million) ; 69 s pour les 1000, 0,6 s au pire, 155 Mo au pic |
 | Treize à la douzaine (Baker's Dozen) + 3 variantes et personnalisée | `bakers.rs` | celui du FreeCell (`freecell_solver::solve_piles`, 13 colonnes, 0 cellule ; KPat : Freecell Solver), qui garde maintenant des cartes cachées (`Code::hidden`, `HIDDEN`) | donnes 1 à 100 : 95/1/4, Patience espagnole 100/0/0, Châteaux en Espagne 97/3/0, Solitaire portugais 94/1/5 ; 1 s au pire |
+| Château (Castle) + 5 variantes et personnalisée | `castle.rs` | celui du FreeCell (`solve_piles`, réserves = cellules ; KPat : Freecell Solver) | donnes 1 à 100 : Château assiégé 71/28/1, Citadelle 87/13/0, Rois exilés 77/15/8, Rues et allées 47/45/8, Engin de siège 97/2/1, Forteresse 95/5/0 ; 0,6 s au pire |
 | Mod3 | `mod3.rs` | `mod3_solver.rs`, portage de `Mod3Solver` sur `patsolve.rs` (`Piles<34, 104>`) | 747/1000 gagnées, 19 perdues, 234 indéterminées ; ≈ 0,5 s/donne, 2,6 s au pire, **245 Mo au pic** ; KPat 541/18/441, jamais contredit |
 
 Aussi fait :
@@ -42,7 +43,7 @@ Demande du 10 novembre 2026 : porter tous les jeux de KPatience qui manquent. Or
 
 1. Treize à la douzaine (Baker's Dozen et variantes : `bakersdozen.cpp`,
    `patsolve/bakersdozensolver.cpp`) — **fait** (commit « Treize à la douzaine »)
-2. Château (Castle et variantes : `castle.cpp`, `patsolve/castlesolver.cpp`) — à faire
+2. Château (Castle et variantes : `castle.cpp`, `patsolve/castlesolver.cpp`) — **fait** (commit « Château »)
 3. Normandie (Normandy : `normandy.cpp`, `patsolve/normandysolver.cpp`) — à faire
 4. Bizilizi (et variantes : `bizilizi.cpp`, `patsolve/bizilizisolver.cpp`) — à faire
 
@@ -50,10 +51,7 @@ Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --ap
 packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
 (`gh run list -R packarch/myrepo`), installer.
 
-Étape en cours : Château. Les cartes cachées dans les règles et le solveur du FreeCell
-(`Code::hidden`, `HIDDEN`, `freecell_solver::solve_piles`) sont prêtes pour lui (KPatience le
-confie aussi à Freecell Solver) ; reste : réserves (cellules), As posés d'avance, colonnes
-alternées face cachée, disposition en deux ailes.
+Étape en cours : Normandie (`normandy.cpp`, `patsolve/normandysolver.cpp`) : lecture des sources.
 
 ## Architecture : où brancher un nouveau jeu
 
@@ -86,7 +84,7 @@ alternées face cachée, disposition en deux ailes.
 ## Comment vérifier
 
 ```sh
-cargo build --release && cargo test --release          # 79 tests
+cargo build --release && cargo test --release          # 83 tests
 ./target/release/packarch-spider --solve 2 1 30       # Spider
 ./target/release/packarch-spider --solve-freecell 3 1 100
 ./target/release/packarch-spider --solve-klondike 1 1 100

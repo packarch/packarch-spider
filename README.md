@@ -1,7 +1,7 @@
 # packarch-spider
 
 Le **Spider**, le **FreeCell**, le **Klondike**, **l'horloge du grand-père**, **Simon le simple**, le
-**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit** et **Treize à la douzaine** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
+**Golf**, le **Yukon**, **Grand-père**, **Mod3**, **les As**, **Quarante & Huit**, **Treize à la douzaine** et **Château** (jeux de patience), en Rust ([egui](https://github.com/emilk/egui)),
 pour [Packarch](https://github.com/packarch/CachyOS-Packarch).
 
 C'est un portage de jeux de [KPatience](https://apps.kde.org/kpat/) (KDE), dont il reprend
@@ -187,6 +187,19 @@ flèches et Entrée) ; **Nouvelle donne** (Ctrl+N) redistribue le même jeu.
   4 indéterminées ; Patience espagnole 100 / 0 / 0 ; Châteaux en Espagne 97 / 3 / 0 ;
   Solitaire portugais 94 / 1 / 5 (1 s au pire).
 
+## Château
+
+- Les règles de KPatience (Castle) et ses variantes (menu Configuration) : Château assiégé,
+  Citadelle, Rois exilés, Rues et allées, Engin de siège, Forteresse, personnalisée ;
+  fondations au milieu, colonnes de part et d'autre (disposition classique ou moderne) ;
+  As (et cartes suivantes) posés d'avance selon la variante ; 0 à 4 réserves, 6 à 10
+  colonnes ; cartes face visible, cachée ou une rangée sur deux ; dépôt automatique sans
+  risque ;
+- **outil de résolution** : KPatience utilise Freecell Solver ; c'est ici celui du FreeCell
+  (réserves = cellules). Sur les donnes 1 à 100 : Château assiégé 71 gagnées, 28 perdues,
+  1 indéterminée ; Citadelle 87 / 13 / 0 ; Rois exilés 77 / 15 / 8 ; Rues et allées
+  47 / 45 / 8 ; Engin de siège 97 / 2 / 1 ; Forteresse 95 / 5 / 0 (0,6 s au pire).
+
 ## Compilation
 
 ```sh
@@ -216,6 +229,8 @@ cargo build --release
 ./target/release/packarch-spider --solve-forty-eight 1 100 # idem à Quarante & Huit
 ./target/release/packarch-spider --deal 42 --bakers 0 # Treize à la douzaine, donne n° 42 (variante 0 à 3)
 ./target/release/packarch-spider --solve-bakers 0 1 100 # idem à Treize à la douzaine
+./target/release/packarch-spider --deal 42 --castle 0 # Château, donne n° 42 (variante 0 à 5)
+./target/release/packarch-spider --solve-castle 0 1 100 # idem à Château
 cargo test --release
 ```
 
@@ -249,7 +264,7 @@ done
 - `src/spider.rs` : règles du Spider, coups, annulation ;
 - `src/spider_solver.rs` : outil de résolution du Spider, portage de `spidersolver2` de KPatience ;
 - `src/freecell.rs` : règles du FreeCell et de ses variantes, dépôt automatique ;
-- `src/freecell_solver.rs` : outil de résolution du FreeCell (aussi pour Treize à la douzaine) ;
+- `src/freecell_solver.rs` : outil de résolution du FreeCell (aussi pour Treize à la douzaine et Château) ;
 - `src/klondike.rs` : règles du Klondike ;
 - `src/patsolve.rs` : le moteur de recherche `patsolve` de KPatience, commun au Klondike, à l'horloge, au
   Yukon, à Grand-père, à Mod3 et à Quarante & Huit, et le stockage compact de leurs piles (`Piles`) ;
@@ -271,6 +286,7 @@ done
 - `src/fortyeight.rs` : règles de Quarante & Huit ;
 - `src/fortyeight_solver.rs` : son outil de résolution, portage corrigé de `FortyeightSolver` ;
 - `src/bakers.rs` : règles et variantes de Treize à la douzaine ;
+- `src/castle.rs` : règles et variantes de Château ;
 - `src/assets.rs` : jeux de cartes et thèmes SVG (rendus avec resvg) ;
 - `src/storage.rs` : réglages, statistiques, partie en cours ;
 - `src/app.rs` : interface.
@@ -279,5 +295,5 @@ done
 
 GPL-2.0-or-later (`COPYING`). D'après KPatience : © 1995 Paul Olav Tvete, © 2000 Stephan Kulow,
 Josh Metzler (Spider), Stephan Kulow (outil de résolution du Spider), Rodolfo Borges, Stephan
-Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
+Kulow et Parker Coates (FreeCell, Klondike, horloge du grand-père, Simon le simple, Golf, Yukon, Grand-père, Mod3, les As, Quarante & Huit, Treize à la douzaine, Château), Tom Holroyd (patsolve) et les autres auteurs de KPatience. Jeux de cartes et thèmes :
 libkdegames et KPatience (licences dans `data/carddecks/*`).

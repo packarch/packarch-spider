@@ -1,6 +1,6 @@
 //! packarch-spider : le Spider, le FreeCell, le Klondike, l'horloge du
 //! grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As,
-//! Quarante & Huit et Treize à la douzaine de KPatience, en Rust (egui).
+//! Quarante & Huit, Treize à la douzaine et Château de KPatience, en Rust (egui).
 //!
 //! Sans argument : la fenêtre du jeu.
 //! `--solve COULEURS DÉBUT FIN` et `--solve-freecell VARIANTE DÉBUT FIN` :
@@ -11,6 +11,7 @@ mod aces;
 mod aces_solver;
 mod app;
 mod bakers;
+mod castle;
 mod assets;
 mod board;
 mod cards;
@@ -64,6 +65,9 @@ Usage : packarch-spider [OPTION]
   --deal N --bakers VARIANTE          lance Treize à la douzaine sur la donne N (variante 0 à 3 :
                                       Treize à la douzaine, Patience espagnole,
                                       Châteaux en Espagne, Solitaire portugais)
+  --deal N --castle VARIANTE          lance Château sur la donne N (variante 0 à 5 : Château
+                                      assiégé, Citadelle, Rois exilés, Rues et allées,
+                                      Engin de siège, Forteresse)
   --solve-freecell VARIANTE DÉBUT FIN résout les donnes DÉBUT à FIN du FreeCell
   --solve-klondike PIOCHE DÉBUT FIN   résout les donnes DÉBUT à FIN du Klondike
   --solve-clock DÉBUT FIN             résout les donnes DÉBUT à FIN de l'horloge du grand-père
@@ -75,6 +79,7 @@ Usage : packarch-spider [OPTION]
   --solve-aces-up DÉBUT FIN           résout les donnes DÉBUT à FIN des As
   --solve-forty-eight DÉBUT FIN       résout les donnes DÉBUT à FIN de Quarante & Huit
   --solve-bakers VARIANTE DÉBUT FIN   résout les donnes DÉBUT à FIN de Treize à la douzaine
+  --solve-castle VARIANTE DÉBUT FIN   résout les donnes DÉBUT à FIN de Château
   -h, --help                          affiche cette aide
   -V, --version                       affiche la version";
 
@@ -96,6 +101,7 @@ fn solve_range(variant: Variant, start: u32, end: u32) {
             Variant::AcesUp => board::AnyGame::AcesUp(aces::Game::new(deal)),
             Variant::FortyEight => board::AnyGame::FortyEight(fortyeight::Game::new(deal)),
             Variant::Bakers(v) => board::AnyGame::Bakers(bakers::Game::new(bakers::PRESETS[v].1, deal)),
+            Variant::Castle(v) => board::AnyGame::Castle(castle::Game::new(castle::PRESETS[v].1, deal)),
         };
         let t = Instant::now();
         let result = match board::solve(&g, &stop) {
@@ -142,6 +148,13 @@ fn main() -> ExitCode {
         ["--solve", suits, first, last] => match (num(suits), num(first), num(last)) {
             (Some(s @ 1..=4), Some(x), Some(y)) if x >= 1 && x <= y => {
                 solve_range(Variant::Spider(s as u8), x, y);
+                return ExitCode::SUCCESS;
+            }
+            _ => return usage_error(),
+        },
+        ["--solve-castle", v, first, last] => match (num(v), num(first), num(last)) {
+            (Some(v @ 0..=5), Some(x), Some(y)) if x >= 1 && x <= y => {
+                solve_range(Variant::Castle(v as usize), x, y);
                 return ExitCode::SUCCESS;
             }
             _ => return usage_error(),
@@ -264,6 +277,7 @@ fn main() -> ExitCode {
             (Some(d), "--freecell", Some(v @ 0..=4)) if d >= 1 => start = Some((Some(Variant::FreeCell(v as usize)), d)),
             (Some(d), "--klondike", Some(n @ (1 | 3))) if d >= 1 => start = Some((Some(Variant::Klondike(n as u8)), d)),
             (Some(d), "--bakers", Some(v @ 0..=3)) if d >= 1 => start = Some((Some(Variant::Bakers(v as usize)), d)),
+            (Some(d), "--castle", Some(v @ 0..=5)) if d >= 1 => start = Some((Some(Variant::Castle(v as usize)), d)),
             _ => return usage_error(),
         },
         _ => return usage_error(),

@@ -16,7 +16,7 @@ use crate::cards::{self, Card};
 use crate::freecell::{self, Build, EmptyFill};
 use crate::spider::{self, ROWS};
 use crate::storage::{self, SavedState, Settings, Stats};
-use crate::{aces, bakers, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
+use crate::{aces, bakers, castle, clock, fortyeight, golf, grandf, klondike, mod3, simon, yukon};
 
 const APP_NAME: &str = "Packarch Spider";
 /// Écart horizontal entre colonnes du Spider, en largeurs de carte (comme KPatience).
@@ -311,6 +311,7 @@ impl Layout {
             AnyGame::AcesUp(g) => Layout::aces(rect, ratio, g),
             AnyGame::FortyEight(g) => Layout::fortyeight(rect, ratio, g),
             AnyGame::Bakers(g) => Layout::bakers(rect, ratio, g),
+            AnyGame::Castle(g) => Layout::castle(rect, ratio, g),
         }
     }
 
@@ -466,6 +467,67 @@ impl Layout {
             .collect();
         // KPatience distribue depuis le bas de l'écran.
         let deal_origin = Pos2::new(piles[0].origin.x, rect.bottom());
+        Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
+    }
+
+    /// Disposition de `Castle::initialize` : les réserves en haut, les
+    /// fondations en colonne au milieu, les colonnes de part et d'autre, deux
+    /// par rangée ; en disposition classique, celles de gauche s'étalent vers
+    /// la gauche, sinon toutes vers la droite. Positions en largeurs (x) et
+    /// hauteurs (y) de carte.
+    fn castle(rect: Rect, ratio: f32, game: &castle::Game) -> Layout {
+        const ROW: f32 = 1.125;
+        const SPREAD_X: f32 = 0.21;
+        const LEFT_ROOM: f32 = 3.0;
+        const RIGHT_ROOM: f32 = 2.0;
+        let o = game.castle;
+        let r = game.rules();
+        let (stacks, cells) = (r.stacks(), r.cells());
+        let offset_y = if cells > 0 { 1.3 } else { 0.0 };
+        let rows = stacks.div_ceil(2).max(4);
+        // Bord gauche de la scène, en unités : -1 en classique (la colonne de
+        // gauche à x = 2 s'étale de 3 cartes), 0 en moderne.
+        let left = if o.modern { 0.0 } else { -1.0 };
+        let width_units = 4.5 + 1.0 + RIGHT_ROOM - left;
+        let height_units = offset_y + ROW * (rows - 1) as f32 + 1.0;
+        let w = (rect.width() / (width_units + 2.0 * LAYOUT_MARGIN))
+            .min(rect.height() / ((height_units + 2.0 * LAYOUT_MARGIN) * ratio))
+            .max(16.0);
+        let h = w * ratio;
+        let x0 = rect.left() + (rect.width() - width_units * w) / 2.0 - left * w;
+        let y0 = rect.top() + ((rect.height() - height_units * h) / 2.0).max(LAYOUT_MARGIN * h);
+        let at = |x: f32, y: f32| Pos2::new(x0 + x * w, y0 + y * h);
+        let piles: Vec<PileGeom> = (0..r.piles())
+            .map(|i| match r.kind(i) {
+                freecell::PileKind::Tableau => {
+                    let row = (i / 2) as f32;
+                    let x = if o.modern { 4.5 * (i % 2) as f32 } else { 2.5 * (i % 2) as f32 + 2.0 };
+                    let origin = at(x, offset_y + ROW * row);
+                    let leftward = !o.modern && i % 2 == 0;
+                    let room = if leftward { LEFT_ROOM } else { RIGHT_ROOM } * w;
+                    let n = game.piles[i].len();
+                    let gap = if n > 1 { (SPREAD_X * w).min(room / (n - 1) as f32) } else { SPREAD_X * w };
+                    let zone = if leftward {
+                        Rect::from_min_max(Pos2::new(origin.x - room, origin.y), Pos2::new(origin.x + w, origin.y + h))
+                    } else {
+                        Rect::from_min_max(origin, Pos2::new(origin.x + w + room, origin.y + h))
+                    };
+                    PileGeom { origin, fan: Fan::Right { n: usize::MAX, gap: if leftward { -gap } else { gap } }, gaps: (0.0, 0.0), zone }
+                }
+                freecell::PileKind::Cell => {
+                    let k = (i - r.first_cell()) as f32;
+                    let origin = at(3.25 - ROW * (cells - 1) as f32 / 2.0 + ROW * k, 0.0);
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+                freecell::PileKind::Foundation => {
+                    let k = (i - r.first_foundation()) as f32;
+                    let origin = at(3.25, offset_y + ROW * k);
+                    PileGeom { origin, fan: Fan::None, gaps: (0.0, 0.0), zone: Rect::from_min_size(origin, Vec2::new(w, h)) }
+                }
+            })
+            .collect();
+        // KPatience distribue depuis la première colonne.
+        let deal_origin = piles[0].origin;
         Layout { card: Vec2::new(w, h), piles, deal_origin, spider: None }
     }
 
@@ -1015,6 +1077,7 @@ enum Action {
     SetFaceUp(bool),
     SetFreeCell(freecell::Options),
     SetBakers(bakers::Options),
+    SetCastle(castle::Options),
     SetKlondikeDraw(u8),
 }
 
@@ -1094,6 +1157,7 @@ fn new_game(settings: &Settings, deal: u32) -> AnyGame {
         GameKind::AcesUp => AnyGame::AcesUp(aces::Game::new(deal)),
         GameKind::FortyEight => AnyGame::FortyEight(fortyeight::Game::new(deal)),
         GameKind::Bakers => AnyGame::Bakers(bakers::Game::new(settings.bakers, deal)),
+        GameKind::Castle => AnyGame::Castle(castle::Game::new(settings.castle, deal)),
     }
 }
 
@@ -1126,6 +1190,13 @@ fn apply_variant(settings: &mut Settings, variant: Variant) {
             settings.game = GameKind::Bakers;
             if let Some((_, o)) = bakers::PRESETS.get(v) {
                 settings.bakers = *o;
+            }
+        }
+        Variant::Castle(v) => {
+            settings.game = GameKind::Castle;
+            if let Some((_, o)) = castle::PRESETS.get(v) {
+                // La disposition est un choix d'affichage : elle reste.
+                settings.castle = castle::Options { modern: settings.castle.modern, ..*o };
             }
         }
     }
@@ -1242,6 +1313,10 @@ impl SpiderApp {
             }
             Action::SetBakers(o) => {
                 self.settings.bakers = o;
+                deal
+            }
+            Action::SetCastle(o) => {
+                self.settings.castle = o.sanitized();
                 deal
             }
             Action::SetKlondikeDraw(d) => {
@@ -1629,7 +1704,7 @@ impl SpiderApp {
                             self.deal();
                         }
                     }
-                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers => {}
+                    GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle => {}
                     GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                         if ui.add_enabled(self.game.can_deal(), egui::Button::new("Piocher").shortcut_text("Tab")).clicked() {
                             self.deal();
@@ -1661,6 +1736,10 @@ impl SpiderApp {
                         AnyGame::Bakers(g) => {
                             let options = g.bakers;
                             self.bakers_options(ui, options);
+                        }
+                        AnyGame::Castle(g) => {
+                            let options = g.castle;
+                            self.castle_options(ui, options);
                         }
                         AnyGame::Klondike(g) => {
                             let draw = g.draw;
@@ -1757,6 +1836,7 @@ impl SpiderApp {
                     GameKind::AcesUp => "Règles des As",
                     GameKind::FortyEight => "Règles de Quarante & Huit",
                     GameKind::Bakers => "Règles de Treize à la douzaine",
+                    GameKind::Castle => "Règles de Château",
                 };
                 if ui.add(egui::Button::new(rules).shortcut_text("F1")).clicked() {
                     self.dialog = Dialog::Rules;
@@ -1892,6 +1972,82 @@ impl SpiderApp {
         }
     }
 
+    fn castle_options(&mut self, ui: &mut egui::Ui, current: castle::Options) {
+        use castle::{Faces, Prefill};
+        let mut chosen: Option<castle::Options> = None;
+        ui.menu_button("Variante", |ui| {
+            let variant = current.variant();
+            for (i, (name, o)) in castle::PRESETS.iter().enumerate() {
+                if ui.radio(variant == i, *name).clicked() {
+                    chosen = Some(castle::Options { faces: current.faces, modern: current.modern, ..*o });
+                }
+            }
+            ui.add_enabled(false, egui::RadioButton::new(variant == castle::CUSTOM, "Personnalisée"));
+        });
+        ui.menu_button("Colonnes vides", |ui| {
+            for (f, label) in [
+                (EmptyFill::Any, "N'importe quelle carte (facile)"),
+                (EmptyFill::Kings, "Rois seulement (moyen)"),
+                (EmptyFill::None, "Aucune carte (difficile)"),
+            ] {
+                if ui.radio(current.empty_fill == f, label).clicked() {
+                    chosen = Some(castle::Options { empty_fill: f, ..current });
+                }
+            }
+        });
+        ui.menu_button("Suites", |ui| {
+            for (b, label) in
+                [(Build::AlternateColor, "Couleurs alternées (rouge, noir)"), (Build::Suit, "Même couleur"), (Build::Rank, "Rang seul")]
+            {
+                if ui.radio(current.build == b, label).clicked() {
+                    chosen = Some(castle::Options { build: b, ..current });
+                }
+            }
+        });
+        ui.menu_button("Réserves", |ui| {
+            for n in 0..=4 {
+                if ui.radio(current.reserves == n, n.to_string()).clicked() {
+                    chosen = Some(castle::Options { reserves: n, ..current });
+                }
+            }
+        });
+        ui.menu_button("Colonnes", |ui| {
+            for n in 6..=10 {
+                if ui.radio(current.stacks == n, n.to_string()).clicked() {
+                    chosen = Some(castle::Options { stacks: n, ..current });
+                }
+            }
+        });
+        ui.menu_button("Cartes des colonnes", |ui| {
+            for (f, label) in [(Faces::Down, "Face cachée"), (Faces::Up, "Face visible"), (Faces::Alternate, "Une rangée sur deux visible")] {
+                if ui.radio(current.faces == f, label).clicked() {
+                    chosen = Some(castle::Options { faces: f, ..current });
+                }
+            }
+        });
+        ui.menu_button("Fondations à la distribution", |ui| {
+            for (f, label) in [
+                (Prefill::None, "Aucune carte"),
+                (Prefill::Aces, "Les As"),
+                (Prefill::Any, "Les As et les cartes qui les suivent"),
+            ] {
+                if ui.radio(current.prefill == f, label).clicked() {
+                    chosen = Some(castle::Options { prefill: f, ..current });
+                }
+            }
+        });
+        ui.menu_button("Disposition", |ui| {
+            for (m, label) in [(false, "Classique"), (true, "Moderne")] {
+                if ui.radio(current.modern == m, label).clicked() {
+                    chosen = Some(castle::Options { modern: m, ..current });
+                }
+            }
+        });
+        if let Some(o) = chosen.filter(|o| *o != current) {
+            self.request(Action::SetCastle(o));
+        }
+    }
+
     /// Barre d'outils, comme celle de KPatience.
     fn toolbar(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
@@ -1931,7 +2087,7 @@ impl SpiderApp {
                         self.deal();
                     }
                 }
-                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers => {}
+                GameKind::FreeCell | GameKind::Clock | GameKind::Simon | GameKind::Yukon | GameKind::Bakers | GameKind::Castle => {}
                 GameKind::Klondike | GameKind::Golf | GameKind::FortyEight => {
                     if tool_button(ui, text, Icon::Draw, "Piocher", "Piocher (Tab)", g && self.game.can_deal(), false).clicked() {
                         self.deal();
@@ -2087,7 +2243,7 @@ impl SpiderApp {
                     .anchor(Align2::CENTER_CENTER, Vec2::ZERO)
                     .show(ctx, |ui| {
                         ui.heading(format!("{APP_NAME} {}", env!("CARGO_PKG_VERSION")));
-                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit\net Treize à la douzaine.");
+                        ui.label("Le Spider (1 à 4 couleurs), le FreeCell (et ses variantes), le Klondike (pioche 1 ou 3),\nl'horloge du grand-père, Simon le simple, le Golf, le Yukon, Grand-père, Mod3, les As, Quarante & Huit,\nTreize à la douzaine et Château.");
                         ui.add_space(6.0);
                         ui.label("Portage en Rust de jeux de KPatience, le jeu de patience du projet KDE.");
                         ui.hyperlink_to("KPatience", "https://apps.kde.org/kpat");
@@ -2118,6 +2274,7 @@ impl SpiderApp {
                     GameKind::AcesUp => ("Règles des As", RULES_ACES_UP),
                     GameKind::FortyEight => ("Règles de Quarante & Huit", RULES_FORTY_EIGHT),
                     GameKind::Bakers => ("Règles de Treize à la douzaine", RULES_BAKERS),
+                    GameKind::Castle => ("Règles de Château", RULES_CASTLE),
                 };
                 egui::Window::new(title)
                     .collapsible(false)
@@ -2494,7 +2651,8 @@ fn variant_combo(ui: &mut egui::Ui, id: &str, variant: &mut Variant) {
 
 /// Les jeux de l'écran de choix, dans l'ordre alphabétique (comme
 /// KPatience), avec leur aperçu (`previews/` de KPatience).
-const GAMES: [(GameKind, &str, &[u8]); 12] = [
+const GAMES: [(GameKind, &str, &[u8]); 13] = [
+    (GameKind::Castle, "Château", include_bytes!("../data/previews/castle.png")),
     (GameKind::FreeCell, "FreeCell", include_bytes!("../data/previews/freecell.png")),
     (GameKind::Golf, "Golf", include_bytes!("../data/previews/golf.png")),
     (GameKind::Grandfather, "Grand-père", include_bytes!("../data/previews/grandf.png")),
@@ -3131,6 +3289,30 @@ sauf celle du dessus.
 Variantes : Treize à la douzaine (rang seul, colonnes vides inutilisables), Patience \
 espagnole (rang seul, colonnes vides libres), Châteaux en Espagne (couleurs alternées, cartes \
 cachées), Solitaire portugais (rang seul, Rois seulement sur les colonnes vides).
+
+Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
+gagnant ; sinon, les coups utiles.
+Démonstration (D) : joue les coups gagnants à votre place.";
+
+const RULES_CASTLE: &str = "\
+But : monter les 52 cartes sur les 4 fondations, de l'As au Roi dans la même couleur.
+
+• Les fondations sont au milieu, les colonnes de part et d'autre, deux par rangée.
+• Selon la variante (menu Configuration) : les As sont posés d'avance sur les fondations, et \
+même (Citadelle, Rois exilés) les cartes qui les suivent pendant la distribution ; une ou \
+plusieurs réserves reçoivent chacune une carte.
+• Sur les colonnes, on descend au rang seul (ou selon l'option, dans la même couleur ou en \
+alternant rouge et noir). Une colonne vide reçoit n'importe quelle carte (Rois exilés : un \
+Roi seulement).
+• Une suite se déplace d'un bloc si les réserves et les colonnes vides le permettraient \
+carte par carte.
+• Les cartes qui ne servent plus sur les colonnes vont toutes seules sur les fondations \
+(dépôt automatique).
+• Double-cliquez sur une carte pour l'envoyer sur une fondation, une réserve ou une colonne.
+
+Variantes : Château assiégé (As d'avance), Citadelle (As et cartes suivantes d'avance), Rois \
+exilés (comme Citadelle, colonnes vides aux Rois), Rues et allées (sans As d'avance), Engin de \
+siège (une réserve), Forteresse (une réserve, sans As d'avance).
 
 Conseil (H) : quand l'outil de résolution sait comment gagner, il montre le prochain coup \
 gagnant ; sinon, les coups utiles.

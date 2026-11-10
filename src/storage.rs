@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use serde::{Deserialize, Serialize, de::DeserializeOwned};
 
 use crate::board::{AnyGame, GameKind, Variant};
-use crate::{bakers, freecell};
+use crate::{bakers, castle, freecell};
 use crate::spider;
 
 const APP: &str = "packarch-spider";
@@ -72,6 +72,8 @@ pub struct Settings {
     pub freecell: freecell::Options,
     /// Treize à la douzaine : variante et options.
     pub bakers: bakers::Options,
+    /// Château : variante et options.
+    pub castle: castle::Options,
     /// FreeCell et Klondike : dépôt automatique sur les fondations.
     pub autodrop: bool,
     /// Klondike : cartes retournées à chaque pioche (1 ou 3).
@@ -93,6 +95,7 @@ impl Default for Settings {
             game: GameKind::Spider,
             freecell: freecell::Options::default(),
             bakers: bakers::Options::default(),
+            castle: castle::Options::default(),
             autodrop: true,
             klondike_draw: 1,
         }
@@ -104,6 +107,7 @@ impl Settings {
         let mut s: Settings = load(config_dir().join("settings.json"));
         s.suit_count = s.suit_count.clamp(1, 4);
         s.freecell = s.freecell.sanitized();
+        s.castle = s.castle.sanitized();
         if s.klondike_draw != 3 {
             s.klondike_draw = 1;
         }
@@ -155,6 +159,8 @@ pub struct Stats {
     pub forty_eight: VariantStats,
     /// Treize à la douzaine, par variante (`bakers::PRESETS`, puis personnalisée).
     pub bakers: [VariantStats; bakers::VARIANTS],
+    /// Château, par variante (`castle::PRESETS`, puis personnalisée).
+    pub castle: [VariantStats; castle::VARIANTS],
 }
 
 impl Stats {
@@ -180,6 +186,7 @@ impl Stats {
             Variant::AcesUp => &self.aces_up,
             Variant::FortyEight => &self.forty_eight,
             Variant::Bakers(v) => &self.bakers[v.min(bakers::CUSTOM)],
+            Variant::Castle(v) => &self.castle[v.min(castle::CUSTOM)],
         }
     }
 
@@ -197,6 +204,7 @@ impl Stats {
             Variant::AcesUp => &mut self.aces_up,
             Variant::FortyEight => &mut self.forty_eight,
             Variant::Bakers(v) => &mut self.bakers[v.min(bakers::CUSTOM)],
+            Variant::Castle(v) => &mut self.castle[v.min(castle::CUSTOM)],
         }
     }
 
