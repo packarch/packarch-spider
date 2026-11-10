@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Name=Packarch Spider
+Comment=Patience card games: Spider, FreeCell, Klondike, Golf...
+Comment[fr]=Jeux de patience : Spider, FreeCell, Klondike, Golf…
+GenericName=Patience Card Game
+GenericName[fr]=Jeu de patience
+Exec=packarch-spider
+Icon=packarch-spider
+Terminal=false
+Categories=Game;CardGame;
+Keywords=spider;freecell;klondike;golf;yukon;solitaire;patience;cards;cartes;réussite;
+StartupNotify=true
+StartupWMClass=org.packarch.Spider

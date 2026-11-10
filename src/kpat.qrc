@@ -1,6 +1,0 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-    <qresource prefix="/kpat">
-        <file alias="kpat.png">../icons/256-apps-kpat.png</file>
-    </qresource>
-</RCC>
