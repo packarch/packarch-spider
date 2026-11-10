@@ -7,7 +7,7 @@ de référence sont dans `/mnt/ssd/dev/kpat` (fork Packarch Spider, C++/Qt ; aus
 de ce dépôt).
 
 Publié le 10 novembre 2026 dans le dépôt `packarch/packarch-spider` (version 2.0.0, puis 2.1.0 avec
-les As et Quarante & Huit), à la place
+les As et Quarante & Huit, 2.2.0 avec tous les jeux de KPatience), à la place
 de la version C++ (jusqu'à `v1.0.1`).
 
 ## Jeux portés
@@ -53,8 +53,7 @@ Ensuite : version 2.2.0 (Cargo.toml, tag), PKGBUILD (`myrepo-pkgs/update.sh --ap
 packarch-spider`), `build.sh packarch-spider`, `myrepo/update.sh`, vérifier GitHub Pages
 (`gh run list -R packarch/myrepo`), installer.
 
-Étape en cours : aucune. Les 4 jeux sont faits, commités et poussés sur `master`. Reste, si
-l'utilisateur le demande : publier la version 2.2.0 (étapes ci-dessus).
+Étape en cours : publication 2.2.0 (demandée le 11 novembre 2026).
 
 ## Architecture : où brancher un nouveau jeu
 

@@ -1,8 +1,8 @@
 [package]
 name = "packarch-spider"
-version = "2.1.0"
+version = "2.2.0"
 edition = "2024"
-description = "Patience card games for Packarch: Spider, FreeCell, Klondike, Golf... (Rust port of KPatience games)"
+description = "Patience card games for Packarch: the 15 games of KPatience (Spider, FreeCell, Klondike, Golf...), Rust port"
 license = "GPL-2.0-or-later"
 repository = "https://github.com/packarch/packarch-spider"
 authors = ["Fabrice Corraire <antidote1911@gmail.com>"]
